@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -13,8 +14,10 @@ class InventoryController extends Controller
      */
     public function index()
     {
-        $inventory = 'this is inventory haha';
-        return Inertia::render('admin/inventory/index', compact('inventory'));
+        $products = Product::all();
+        $inventory_count = Product::count();
+
+        return Inertia::render('admin/inventory/index', compact('products', 'inventory_count'));
     }
 
     /**
@@ -22,7 +25,7 @@ class InventoryController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('admin/inventory/create');
     }
 
     /**
@@ -38,46 +41,15 @@ class InventoryController extends Controller
      */
     public function show(string $id)
     {
-        // ✅ Fixed PHP Array Syntax
-        $products = [
-            [
-                "id" => 1,
-                "image" => "/images/no_image.jpeg",
-                "name" => "Laptop",
-                "category" => "Electronics",
-                "stock" => 10,
-                "sellingPrice" => "₱50,000",
-                "expirationDate" => "N/A",
-            ],
-            [
-                "id" => 2,
-                "image" => "/images/no_image.jpeg",
-                "name" => "Milk",
-                "category" => "Dairy",
-                "stock" => 30,
-                "sellingPrice" => "₱80",
-                "expirationDate" => "Sept 25, 2025",
-            ],
-            [
-                "id" => 3,
-                "image" => "/images/no_image.jpeg",
-                "name" => "Shampoo",
-                "category" => "Personal Care",
-                "stock" => 20,
-                "sellingPrice" => "₱150",
-                "expirationDate" => "Sept 25, 2025",
-            ],
-        ];
 
-        // ✅ Find the product using `array_filter`
-        $product = collect($products)->firstWhere('id', (int) $id);
+        $product = Product::find($id);
+        $profit = $product->profit();
 
-        // ✅ Handle if product is not found
         if (!$product) {
             return redirect()->route('admin.inventory.index')->with('error', 'Product not found.');
         }
 
-        return Inertia::render('admin/inventory/show', compact('product'));
+        return Inertia::render('admin/inventory/show', compact('product', 'profit'));
     }
 
 

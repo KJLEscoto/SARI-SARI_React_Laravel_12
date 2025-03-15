@@ -41,18 +41,18 @@ export interface User {
     [key: string]: unknown; // This allows for additional properties...
 }
 
-// export type InventoryIndex = string;
-
 export interface Product {
     id: number;
+    image?: string;
     name: string;
     category: string;
     stock: number;
-    selling_price: float;
-    expiration_date: string;
+    selling_price: number;
+    market_price: number;
+    expiration_date?: string;
     created_at: string;
     updated_at: string;
-    [key: string]: unknown; // This allows for additional properties...
+    [key: string]: unknown;
 }
 
 export interface Category {
