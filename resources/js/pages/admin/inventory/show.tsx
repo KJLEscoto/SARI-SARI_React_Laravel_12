@@ -19,9 +19,9 @@ export default function Show({ product, profit }: { product: Product, profit: nu
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title={`${product.name} | Inventory`} />
-      <div className="h-full flex flex-col gap-10 pt-10 px-4">
+      <div className="h-full flex flex-col gap-10 p-4">
         <section className="flex lg:flex-row flex-col gap-5">
-          <img src={product.image} alt={`${product.name} image`} className="lg:w-[700px] h-[300px] rounded-lg object-cover" />
+          <img src={product.image ? `/storage/${product.image}` : "/images/no_image.jpeg"} alt={`${product.name} image`} className="lg:w-[700px] h-[300px] rounded-lg object-cover" onError={(e) => (e.currentTarget.src = "/images/no_image.jpeg")} />
 
           <div className='w-full divide-y divide-gray-200 *:p-5'>
             <section className='flex gap-2 w-full justify-end'>
@@ -55,7 +55,7 @@ export default function Show({ product, profit }: { product: Product, profit: nu
                 </div>
               </div>
               <div className='text-end text-sm'>
-                <p className={profit < 0 ? 'text-red-700' : 'text-green-700'}>
+                <p className={profit < 1 ? 'text-red-700' : 'text-green-700'}>
                   {profit < 0 ? 'Loss' : 'Gain'} : <strong>₱{profit.toFixed(2)}</strong>
                 </p>
               </div>

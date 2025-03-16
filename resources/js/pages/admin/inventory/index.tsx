@@ -1,7 +1,7 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import AppLayout from '@/layouts/app-layout';
 import { Product, type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage, router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import {
   ColumnDef, useReactTable, getCoreRowModel, flexRender,
@@ -16,6 +16,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { toast } from "sonner";
+import dayjs from "dayjs";
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Inventory', href: '/inventory' },
@@ -27,36 +30,64 @@ export default function Index({ products, inventory_count }: { products: Product
 
   // Memoized Search Filtering
   const filteredProducts = useMemo(() => {
-    return products.filter((product) =>
-      product.name.toLowerCase().includes(search.toLowerCase())
-    );
+    return [...products]
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) // Sort latest first
+      .filter((product) => product.name.toLowerCase().includes(search.toLowerCase()));
   }, [products, search]);
+
+  // delete product
+  const handleDelete = (id: number) => {
+    if (!confirm("Are you sure you want to delete this product?")) return;
+
+    router.delete(route("inventory.destroy", { id }), {
+      onSuccess: () => {
+        toast.success("Product deleted successfully!");
+      },
+      onError: () => {
+        toast.error("Failed to delete product.");
+      },
+    });
+  };
 
   // Define Table Columns
   const columns: ColumnDef<Product>[] = [
     {
       accessorKey: "image",
       header: "Image",
-      cell: ({ row }) => (
-        <img
-          src={row.original.image || "/placeholder.jpg"}
-          alt={`${row.original.name} image`}
-          className="w-16 h-16 object-cover rounded-md"
-          loading="lazy"
-        />
-      ),
+      cell: ({ row }) => {
+        const imageUrl = row.original.image
+          ? `/storage/${row.original.image}`
+          : "/images/no_image.jpeg";
+
+        return (
+          <img
+            src={imageUrl}
+            alt={`${row.original.name} image`}
+            className="w-16 h-16 object-cover rounded-md"
+            onError={(e) => (e.currentTarget.src = "/images/no_image.jpeg")} // Handle broken images
+          />
+        );
+      },
     },
     { accessorKey: "name", header: "Name" },
     { accessorKey: "stock", header: "Stock" },
     {
       accessorKey: "selling_price",
       header: "Selling Price",
-      cell: ({ row }) => `₱${row.original.selling_price}`,
+      cell: ({ row }) => {
+        return (
+          <strong>₱{row.original.selling_price}</strong>
+        )
+      },
     },
     {
       accessorKey: "expiration_date",
       header: "Expiration Date",
-      cell: ({ row }) => row.original.expiration_date || "N/A",
+      cell: ({ row }) =>
+        row.original.expiration_date
+          ? dayjs(row.original.expiration_date).format('MMM DD, YYYY')
+          : "N/A",
+
     },
     {
       accessorKey: "actions",
@@ -89,7 +120,7 @@ export default function Index({ products, inventory_count }: { products: Product
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="destructive" size="sm">
+              <Button variant="destructive" size="sm" onClick={() => handleDelete(row.original.id)}>
                 <Trash2 className="w-4 h-4" />
               </Button>
             </TooltipTrigger>
@@ -121,7 +152,7 @@ export default function Index({ products, inventory_count }: { products: Product
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Inventory" />
-      <div className="flex flex-col gap-4 rounded-xl p-4">
+      <div className="flex flex-col gap-4 p-4">
         <h1 className="text-2xl font-semibold relative w-fit">Products <span className="absolute -right-6 top-0 text-sm">{inventory_count}</span></h1>
 
         <section className="flex justify-between">
@@ -131,7 +162,7 @@ export default function Index({ products, inventory_count }: { products: Product
               placeholder="Search by name..."
               value={search}
               onChange={handleSearch}
-              className="w-64"
+              className="w-80"
             />
           </div>
           <Link href={route("inventory.create")}>
@@ -141,12 +172,11 @@ export default function Index({ products, inventory_count }: { products: Product
             </Button>
           </Link>
         </section>
-
         <TooltipProvider>
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map(headerGroup => (
-                <TableRow key={headerGroup.id}>
+                <TableRow className="hover:bg-transparent" key={headerGroup.id}>
                   {headerGroup.headers.map(header => (
                     <TableHead key={header.id}>
                       {flexRender(header.column.columnDef.header, header.getContext())}
@@ -158,8 +188,12 @@ export default function Index({ products, inventory_count }: { products: Product
             <TableBody>
               {table.getRowModel().rows.length ? (
                 table.getRowModel().rows.map(row => (
-                  <TableRow key={row.id}>
-                    {row.getVisibleCells().map(cell => (
+                  <TableRow
+                    className={`${row.original.stock <= 0 ? "bg-red-100 hover:bg-red-200" : ""
+                      }`}
+                    key={row.id}
+                  >
+                    {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
@@ -187,6 +221,6 @@ export default function Index({ products, inventory_count }: { products: Product
           </div>
         </div>
       </div>
-    </AppLayout>
+    </AppLayout >
   );
 }
