@@ -7,6 +7,7 @@ use App\Http\Requests\StoreProductRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class InventoryController extends Controller
@@ -35,11 +36,12 @@ class InventoryController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
+        // dd($request->all());
         $validated = $request->validated();
 
         if ($request->hasFile('image')) {
             // Move the image to 'storage/app/public/products' and store the path
-            $path = $request->file('image')->store('products', 'public');
+            $path = Storage::disk('public')->put('products', $request->file('image'));
         } else {
             $path = null;
         }
@@ -52,10 +54,10 @@ class InventoryController extends Controller
             'selling_price' => $validated['selling_price'],
             'market_price' => $validated['market_price'],
             'expiration_date' => $validated['expiration_date'] ?? null,
-            'image' => $path, // Save only the relative path 'products/image.jpg'
+            'image' => $path,
         ]);
 
-        return Redirect::back()->with('success', 'Product added successfully.');
+        return Redirect::route('inventory.index')->with('success', 'Product has been added.');
     }
 
     /**
@@ -102,6 +104,7 @@ class InventoryController extends Controller
             return Redirect::back()->with('error', 'Product not found.');
         }
 
+        Storage::disk('public')->delete($product->image);
         $product->delete();
 
         return Redirect::back()->with('success', 'Product deleted successfully.');

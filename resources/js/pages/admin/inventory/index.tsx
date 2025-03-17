@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import AppLayout from '@/layouts/app-layout';
-import { Product, type BreadcrumbItem } from '@/types';
+import { Flash, Product, type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage, router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import {
@@ -24,9 +24,19 @@ const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Inventory', href: '/inventory' },
 ];
 
-export default function Index({ products, inventory_count }: { products: Product[]; inventory_count: number }) {
+export default function Index({ products, inventory_count }: { products: Product[]; inventory_count: number; }) {
   // Search State
   const [search, setSearch] = useState("");
+  const { flash } = usePage<{ flash: Flash }>().props;
+
+  useEffect(() => {
+    if (flash.success) {
+      toast.success(flash.success);
+    }
+    else if (flash.success) {
+      toast.error(flash.error);
+    }
+  }, [flash]);
 
   // Memoized Search Filtering
   const filteredProducts = useMemo(() => {
@@ -39,14 +49,7 @@ export default function Index({ products, inventory_count }: { products: Product
   const handleDelete = (id: number) => {
     if (!confirm("Are you sure you want to delete this product?")) return;
 
-    router.delete(route("inventory.destroy", { id }), {
-      onSuccess: () => {
-        toast.success("Product deleted successfully!");
-      },
-      onError: () => {
-        toast.error("Failed to delete product.");
-      },
-    });
+    router.delete(route("inventory.destroy", { id }));
   };
 
   // Define Table Columns
