@@ -1,8 +1,11 @@
 import AppLayout from '@/layouts/app-layout';
-import { Product, type BreadcrumbItem } from '@/types';
+import { Flash, Product, type BreadcrumbItem } from '@/types';
 import { Button } from '@/components/ui/button';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import dayjs from "dayjs";
+import { useEffect } from 'react';
+import { toast } from 'sonner';
+import { ChevronLeft, Edit3, Trash2 } from "lucide-react";
 
 export default function Show({ product, profit }: { product: Product, profit: number }) {
   const breadcrumbs: BreadcrumbItem[] = [
@@ -16,22 +19,47 @@ export default function Show({ product, profit }: { product: Product, profit: nu
     },
   ];
 
+  const { flash } = usePage<{ flash: Flash }>().props;
+
+  useEffect(() => {
+    if (flash.update) {
+      toast.info(flash.update);
+    }
+    else if (flash.error) {
+      toast.error(flash.error);
+    }
+  }, [flash]);
+
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title={`${product.name} | Inventory`} />
       <div className="h-full flex flex-col gap-10 p-4">
+
+        <section className='flex gap-2 w-full justify-between'>
+          <Link href={route("inventory.index")}>
+            <Button variant="outline" size="sm">
+              <ChevronLeft className="w-4 h-4" />
+              Back
+            </Button>
+          </Link>
+          <div className='flex gap-2'>
+            <Link href={route("inventory.edit", product.id)}>
+              <Button variant="default" size="sm">
+                <Edit3 className="w-4 h-4" />
+                Edit
+              </Button>
+            </Link>
+            <Button variant="destructive" size="sm">
+              Delete
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </div>
+        </section>
+
         <section className="flex lg:flex-row flex-col gap-5">
-          <img src={product.image ? `/storage/${product.image}` : "/images/no_image.jpeg"} alt={`${product.name} image`} className="lg:w-[700px] h-[300px] rounded-lg object-cover" onError={(e) => (e.currentTarget.src = "/images/no_image.jpeg")} />
+          <img src={product.image ? `/storage/${product.image}` : "/images/no_image.jpeg"} alt={`${product.name} image`} className="w-1/4 h-fit rounded-lg object-cover" onError={(e) => (e.currentTarget.src = "/images/no_image.jpeg")} />
 
           <div className='w-full divide-y divide-gray-200 *:p-5'>
-            <section className='flex gap-2 w-full justify-end'>
-              <Link href={route("inventory.index")}>
-                <Button variant="outline" size="sm">Back</Button>
-              </Link>
-              <Button variant="default" size="sm">Edit</Button>
-              <Button variant="destructive" size="sm">Delete</Button>
-            </section>
-
             <section className='flex justify-between gap-5'>
               <div>
                 <p className='text-2xl font-bold'>{product.name}</p>
@@ -60,17 +88,18 @@ export default function Show({ product, profit }: { product: Product, profit: nu
                 </p>
               </div>
             </section>
-          </div>
-        </section>
 
-        <section className="flex flex-col gap-3">
-          <h1 className='font-semibold'>More Details</h1>
-          <div className='*:p-5 *:text-gray-700 border border-gray-100 *:hover:bg-gray-50 rounded-lg divide-y divide-gray-200'>
-            <p><span className='font-semibold text-sm'>Product ID :</span> {product.id}</p>
-            <p><span className='font-semibold text-sm'>Expiration Date :</span> {dayjs(product.expiration_date).format('MMM DD, YYYY ') || 'N/A'}</p>
-            <p><span className='font-semibold text-sm'>Product Added :</span> {dayjs(product.created_at).format('MMM DD, YYYY | hh:mm a')}</p>
-            <p><span className='font-semibold text-sm'>Last Update :</span> {dayjs(product.updated_at).format('MMM DD, YYYY | hh:mm a')}</p>
+            <section className="flex flex-col gap-3">
+              <h1 className='font-semibold'>More Details</h1>
+              <div className='*:p-5 *:text-gray-700 border border-gray-100 *:hover:bg-gray-50 rounded-lg divide-y divide-gray-200'>
+                <p><span className='font-semibold text-sm'>Product ID :</span> {product.id}</p>
+                <p><span className='font-semibold text-sm'>Expiration Date :</span> {dayjs(product.expiration_date).format('MMM DD, YYYY ') || 'N/A'}</p>
+                <p><span className='font-semibold text-sm'>Product Added :</span> {dayjs(product.created_at).format('MMM DD, YYYY | hh:mm a')}</p>
+                <p><span className='font-semibold text-sm'>Last Update :</span> {dayjs(product.updated_at).format('MMM DD, YYYY | hh:mm a')}</p>
+              </div>
+            </section>
           </div>
+
         </section>
       </div>
     </AppLayout>

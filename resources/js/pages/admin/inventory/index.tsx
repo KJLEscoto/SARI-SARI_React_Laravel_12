@@ -33,7 +33,7 @@ export default function Index({ products, inventory_count }: { products: Product
     if (flash.success) {
       toast.success(flash.success);
     }
-    else if (flash.success) {
+    else if (flash.error) {
       toast.error(flash.error);
     }
   }, [flash]);
@@ -99,7 +99,7 @@ export default function Index({ products, inventory_count }: { products: Product
         <div className='flex items-center justify-center gap-1.5'>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Link href={route('inventory.show', { id: row.original.id })}>
+              <Link href={route('inventory.show', row.original.id)}>
                 <Button variant="outline" size="sm">
                   <Eye className="w-4 h-4" />
                 </Button>
@@ -112,9 +112,11 @@ export default function Index({ products, inventory_count }: { products: Product
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="default" size="sm">
-                <Edit3 className="w-4 h-4" />
-              </Button>
+              <Link href={route('inventory.edit', row.original.id)}>
+                <Button variant="default" size="sm">
+                  <Edit3 className="w-4 h-4" />
+                </Button>
+              </Link>
             </TooltipTrigger>
             <TooltipContent>
               <p>Edit</p>

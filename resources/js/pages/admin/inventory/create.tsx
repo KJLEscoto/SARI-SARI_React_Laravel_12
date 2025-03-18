@@ -4,9 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { FormEventHandler, useRef } from 'react';
+import { FormEventHandler, useState, useEffect } from 'react';
 import InputError from '@/components/input-error';
-import { toast } from 'sonner';
+import { X, Plus } from "lucide-react";
 
 type ProductForm = {
   name: string;
@@ -34,12 +34,25 @@ export default function Create() {
     image: null,
   });
 
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setData('image', file);
+    const file = e.target.files?.[0] || null;
+
+    // Revoke old object URL to avoid memory leaks
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
     }
-  }
+
+    if (file) {
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+      setData("image", file);
+    } else {
+      setImagePreview(null);
+      setData("image", null);
+    }
+  };
 
   const createProduct: FormEventHandler = (e) => {
     e.preventDefault();
@@ -57,58 +70,78 @@ export default function Create() {
 
             <div className="flex justify-end gap-3 col-span-2">
               <Link href={route('inventory.index')}>
-                <Button variant="outline" type="button">Cancel</Button>
+                <Button variant="outline" type="button">
+                  <X className="w-4 h-4" />
+                  Cancel
+                </Button>
               </Link>
-              <Button type="submit" disabled={processing}>Add Product</Button>
+              <Button type="submit" disabled={processing}>
+                Add Product
+                <Plus className="w-4 h-4" />
+              </Button>
             </div>
           </section>
 
-          <section className="space-y-1">
-            <Label htmlFor="name"> Product Name</Label>
-            <Input id="name" type="text" value={data.name} onChange={(e) => setData('name', e.target.value)} required />
-            <InputError message={errors.name} />
-          </section>
+          <div className='grid grid-cols-3 gap-5'>
+            <section className="space-y-1">
+              <Label htmlFor="name"> Product Name</Label>
+              <Input id="name" type="text" value={data.name} onChange={(e) => setData('name', e.target.value)} required />
+              <InputError message={errors.name} />
+            </section>
 
-          <section className="space-y-1">
-            <Label htmlFor="name">Category</Label>
-            <Input id="category" type="text" value={data.category} onChange={(e) => setData('category', e.target.value)} required />
-            <InputError message={errors.category} />
-          </section>
+            <section className="space-y-1">
+              <Label htmlFor="name">Category</Label>
+              <Input id="category" type="text" value={data.category} onChange={(e) => setData('category', e.target.value)} required />
+              <InputError message={errors.category} />
+            </section>
 
-          <section className="space-y-1">
-            <Label htmlFor="stock">Stock Quantity</Label>
-            <Input id="stock" type="number" placeholder='0' value={data.stock} onChange={(e) => setData('stock', Number(e.target.value))} required />
-            <InputError message={errors.stock} />
-          </section>
+            <section className="space-y-1">
+              <Label htmlFor="stock">Stock Quantity</Label>
+              <Input id="stock" type="number" placeholder='0' value={data.stock} onChange={(e) => setData('stock', Number(e.target.value))} required />
+              <InputError message={errors.stock} />
+            </section>
 
-          <section className="space-y-1">
-            <Label htmlFor="market_price">Market Price</Label>
-            <Input id="market_price" type="number" placeholder='0.00' step='0.01' value={data.market_price} onChange={(e) => setData('market_price', Number(e.target.value))} required />
-            <InputError message={errors.market_price} />
-          </section>
+            <section className="space-y-1">
+              <Label htmlFor="market_price">Market Price</Label>
+              <Input id="market_price" type="number" placeholder='0.00' step='0.01' value={data.market_price} onChange={(e) => setData('market_price', Number(e.target.value))} required />
+              <InputError message={errors.market_price} />
+            </section>
 
-          <section className="space-y-1">
-            <Label htmlFor="selling_price">Selling Price</Label>
-            <Input id="selling_price" type="number" placeholder='0.00' step='0.01' value={data.selling_price} onChange={(e) => setData('selling_price', Number(e.target.value))} required />
-            <InputError message={errors.selling_price} />
-          </section>
+            <section className="space-y-1">
+              <Label htmlFor="selling_price">Selling Price</Label>
+              <Input id="selling_price" type="number" placeholder='0.00' step='0.01' value={data.selling_price} onChange={(e) => setData('selling_price', Number(e.target.value))} required />
+              <InputError message={errors.selling_price} />
+            </section>
 
-          <section className="space-y-1">
-            <Label htmlFor="expiration_date">Expiration Date</Label>
-            <Input
-              id="expiration_date"
-              type="date"
-              value={data.expiration_date || ""}
-              onChange={(e) => setData("expiration_date", e.target.value)}
-            />
-            <InputError message={errors.expiration_date} />
-          </section>
+            <section className="space-y-1">
+              <Label htmlFor="expiration_date">Expiration Date</Label>
+              <Input
+                id="expiration_date"
+                type="date"
+                value={data.expiration_date || ""}
+                onChange={(e) => setData("expiration_date", e.target.value)}
+              />
+              <InputError message={errors.expiration_date} />
+            </section>
 
-          <section className="space-y-1">
-            <Label htmlFor="image">Image</Label>
-            <Input id="image" type="file" onChange={handleFileChange} />
-            <InputError message={errors.image} />
-          </section>
+            <section className="space-y-1">
+              <Label htmlFor="image">Image</Label>
+              <Input id="image" type="file" onChange={handleFileChange} />
+              <InputError message={errors.image} />
+            </section>
+
+            {imagePreview && (
+              <section className="space-y-1">
+                <Label htmlFor="image">Image Preview</Label>
+                <img
+                  src={imagePreview}
+                  alt="Product Image"
+                  className="w-fit h-fit rounded-md"
+                />
+              </section>
+            )}
+
+          </div>
         </form>
       </main>
     </AppLayout>
