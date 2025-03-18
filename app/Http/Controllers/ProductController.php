@@ -12,7 +12,11 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        // $products = Product::all(); //Get all non-deleted products (default behavior)
+        // $trashedProducts = Product::onlyTrashed()->get(); //Get only soft-deleted products
+        // $allProducts = Product::withTrashed()->get(); //Get all products, including soft-deleted ones
+
+
     }
 
     /**
@@ -62,4 +66,36 @@ class ProductController extends Controller
     {
         //
     }
+
+    // restore product
+    // public function restore($id)
+    // {
+    //     $product = Product::onlyTrashed()->findOrFail($id);
+    //     $product->restore();
+
+    //     return redirect()->route('inventory.index')->with('success', "{$product->name} has been restored.");
+    // }
+
+    // permanently delete
+    // public function forceDelete($id)
+    // {
+    //     $product = Product::onlyTrashed()->findOrFail($id);
+    //     $product->forceDelete();
+
+    //     return redirect()->route('inventory.index')->with('success', "{$product->name} has been permanently deleted.");
+    // }
+
+    // routes
+    // Route::patch('/inventory/{id}/restore', [ProductController::class, 'restore'])->name('inventory.restore');
+    // Route::delete('/inventory/{id}/force-delete', [ProductController::class, 'forceDelete'])->name('inventory.forceDelete');
+
+    // Restore Button
+    // <Button variant="outline" size="sm" onClick={() => router.patch(route('inventory.restore', { id: row.original.id }))}>
+    //   Restore
+    // </Button>
+
+    // Permanent Delete Button
+    // <Button variant="destructive" size="sm" onClick={() => router.delete(route('inventory.forceDelete', { id: row.original.id }))}>
+    //   Permanently Delete
+    // </Button>
 }

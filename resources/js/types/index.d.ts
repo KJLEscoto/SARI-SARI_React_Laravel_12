@@ -45,7 +45,7 @@ export interface Product {
     id: number;
     image?: string | null;
     name: string;
-    category: string;
+    // category: string;
     stock: number;
     selling_price: number;
     market_price: number;

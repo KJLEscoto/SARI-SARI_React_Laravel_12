@@ -24,7 +24,7 @@ class StoreProductRequest extends FormRequest
         return [
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480',
             'name' => 'required|string|max:255|unique:products,name',
-            'category' => 'required|string|max:255',
+            // 'category' => 'required|string|max:255',
             'stock' => 'required|integer|min:0',
             'selling_price' => 'required|numeric|min:0',
             'market_price' => 'required|numeric|min:0',
@@ -40,7 +40,7 @@ class StoreProductRequest extends FormRequest
             'image.max' => 'The image size must not exceed 2MB.',
             'name.required' => 'Product name is required.',
             'name.unique' => 'A product with this name already exists.',
-            'category.required' => 'Category is required.',
+            // 'category.required' => 'Category is required.',
             'stock.required' => 'Stock quantity is required.',
             'stock.integer' => 'Stock must be a valid number.',
             'selling_price.required' => 'Selling price is required.',

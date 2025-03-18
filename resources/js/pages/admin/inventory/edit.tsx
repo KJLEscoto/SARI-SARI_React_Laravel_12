@@ -18,7 +18,7 @@ export default function Edit({ product }: { product: Product }) {
   ];
 
   const [name, setName] = useState<string>(product.name);
-  const [category, setCategory] = useState<string>(product.category);
+  // const [category, setCategory] = useState<string>(product.category);
   const [stock, setStock] = useState<number>(product.stock);
   const [market_price, setMarketPrice] = useState<number>(product.market_price);
   const [selling_price, setSellingPrice] = useState<number>(product.selling_price);
@@ -35,14 +35,14 @@ export default function Edit({ product }: { product: Product }) {
   useEffect(() => {
     setIsFormChanged(
       name !== product.name ||
-      category !== product.category ||
+      // category !== product.category ||
       stock !== product.stock ||
       market_price !== product.market_price ||
       selling_price !== product.selling_price ||
       expiration_date !== (product.expiration_date ? dayjs(product.expiration_date).format('YYYY-MM-DD') : null) ||
       image !== null
     );
-  }, [name, category, stock, market_price, selling_price, expiration_date, image]);
+  }, [name, stock, market_price, selling_price, expiration_date, image]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -67,7 +67,6 @@ export default function Edit({ product }: { product: Product }) {
     router.post(route('inventory.update', { id: product.id }), {
       _method: 'PUT',
       name,
-      category,
       stock,
       market_price,
       selling_price,
@@ -82,8 +81,8 @@ export default function Edit({ product }: { product: Product }) {
       <main className="flex flex-col gap-4 p-4">
         <form className='flex flex-col gap-5' onSubmit={updateProduct}>
 
-          <section className='w-full flex justify-between items-center'>
-            <h1 className="text-2xl font-semibold">Edit Product</h1>
+          <section className='w-full flex flex-wrap gap-3 justify-between items-center'>
+            <h1 className="text-2xl font-semibold text-nowrap">Edit Product</h1>
 
             <div className="flex justify-end gap-3 col-span-2">
               <Link href={route('inventory.show', { id: product.id })}>
@@ -99,24 +98,18 @@ export default function Edit({ product }: { product: Product }) {
             </div>
           </section>
 
-          <div className='grid grid-cols-3 gap-5'>
+          <div className='grid md:grid-cols-3 grid-cols-1 gap-5'>
             <section className="space-y-1">
               <Label htmlFor="name"> Product Name</Label>
               <Input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} required />
               <InputError message={errors.name} />
             </section>
 
-            <section className="space-y-1">
+            {/* <section className="space-y-1">
               <Label htmlFor="category">Category</Label>
               <Input id="category" type="text" value={category} onChange={(e) => setCategory(e.target.value)} required />
               <InputError message={errors.category} />
-            </section>
-
-            <section className="space-y-1">
-              <Label htmlFor="stock">Stock Quantity</Label>
-              <Input id="stock" type="number" placeholder='0' value={stock} onChange={(e) => setStock(Number(e.target.value))} required />
-              <InputError message={errors.stock} />
-            </section>
+            </section> */}
 
             <section className="space-y-1">
               <Label htmlFor="market_price">Market Price</Label>
@@ -128,6 +121,12 @@ export default function Edit({ product }: { product: Product }) {
               <Label htmlFor="selling_price">Selling Price</Label>
               <Input id="selling_price" type="number" placeholder='0.00' step='0.01' value={selling_price} onChange={(e) => setSellingPrice(Number(e.target.value))} required />
               <InputError message={errors.selling_price} />
+            </section>
+
+            <section className="space-y-1">
+              <Label htmlFor="stock">Stock Quantity</Label>
+              <Input id="stock" type="number" placeholder='0' value={stock} onChange={(e) => setStock(Number(e.target.value))} required />
+              <InputError message={errors.stock} />
             </section>
 
             <section className="space-y-1">
@@ -150,7 +149,7 @@ export default function Edit({ product }: { product: Product }) {
             {(product.image || imagePreview) && (
               <section className="space-y-1">
                 <Label>Image Preview</Label>
-                <div className="flex gap-3">
+                <div className="flex md:flex-row flex-col-reverse gap-3">
                   {product.image && (
                     <img
                       src={`/storage/${product.image}`}

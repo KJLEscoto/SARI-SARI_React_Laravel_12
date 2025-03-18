@@ -23,7 +23,7 @@ class UpdateProductRequest extends FormRequest
         return [
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480',
             'name' => 'required|string|max:255|unique:products,name,' . $this->route('inventory'),
-            'category' => 'required|string|max:255',
+            // 'category' => 'required|string|max:255',
             'stock' => 'required|integer|min:0',
             'selling_price' => 'required|numeric|min:0',
             'market_price' => 'required|numeric|min:0',
@@ -42,7 +42,7 @@ class UpdateProductRequest extends FormRequest
             'image.max' => 'The image size must not exceed 20MB.',
             'name.required' => 'Product name is required.',
             'name.unique' => 'A product with this name already exists.',
-            'category.required' => 'Category is required.',
+            // 'category.required' => 'Category is required.',
             'stock.required' => 'Stock quantity is required.',
             'stock.integer' => 'Stock must be a valid number.',
             'selling_price.required' => 'Selling price is required.',

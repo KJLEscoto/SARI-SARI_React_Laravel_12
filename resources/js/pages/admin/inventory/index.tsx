@@ -47,8 +47,6 @@ export default function Index({ products, inventory_count }: { products: Product
 
   // delete product
   const handleDelete = (id: number) => {
-    if (!confirm("Are you sure you want to delete this product?")) return;
-
     router.delete(route("inventory.destroy", { id }));
   };
 
@@ -101,7 +99,7 @@ export default function Index({ products, inventory_count }: { products: Product
             <TooltipTrigger asChild>
               <Link href={route('inventory.show', row.original.id)}>
                 <Button variant="outline" size="sm">
-                  <Eye className="w-4 h-4" />
+                  <Eye className="w-4 h-4 text-black dark:text-white" />
                 </Button>
               </Link>
             </TooltipTrigger>
@@ -124,14 +122,36 @@ export default function Index({ products, inventory_count }: { products: Product
           </Tooltip>
 
           <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="destructive" size="sm" onClick={() => handleDelete(row.original.id)}>
-                <Trash2 className="w-4 h-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Delete</p>
-            </TooltipContent>
+            <Dialog>
+              <TooltipTrigger asChild>
+                <DialogTrigger>
+                  {/* <Button variant="destructive" size="sm" onClick={() => handleDelete(row.original.id)}> */}
+                  <Button variant="destructive" size="sm">
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </DialogTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Delete</p>
+              </TooltipContent>
+              <DialogContent>
+                <DialogTitle>Delete Confirmation</DialogTitle>
+                <DialogDescription>
+                  This action cannot be undone.
+                  Are you sure you want to delete '<strong>{row.original.name}</strong>' ?
+                </DialogDescription>
+                <DialogFooter className="flex w-full justify-end gap-3">
+                  <DialogClose asChild>
+                    <Button type="button" size="sm" variant="secondary">
+                      Cancel
+                    </Button>
+                  </DialogClose>
+                  <Button variant="destructive" type="submit" size="sm" onClick={() => handleDelete(row.original.id)}>
+                    Delete
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </Tooltip>
         </div>
       ),
@@ -159,7 +179,7 @@ export default function Index({ products, inventory_count }: { products: Product
       <Head title="Inventory" />
       <div className="flex flex-col gap-4 p-4">
         <section className="flex justify-between gap-4">
-          <h1 className="text-2xl font-semibold relative w-fit">Products <span className="absolute -right-6 top-0 text-sm">{inventory_count}</span></h1>
+          <h1 className="text-2xl font-semibold relative w-fit">Products <span className="absolute -right-4 top-0 text-sm">{inventory_count}</span></h1>
           <div className="flex gap-5">
             <section className="flex items-center gap-2">
               <div className="w-3 h-3 bg-red-200 dark:bg-red-950 border border-red-500 shadow"></div>
@@ -207,11 +227,11 @@ export default function Index({ products, inventory_count }: { products: Product
                 table.getRowModel().rows.map(row => (
                   <TableRow
                     className={`${row.original.stock <= 5
-                      ? "bg-red-100 dark:bg-red-950 hover:bg-red-200 dark:hover:bg-red-900"
+                      ? "text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-950 hover:bg-red-200 dark:hover:bg-red-950/80 border-t border-red-500"
                       : row.original.expiration_date === null || row.original.expiration_date === undefined
                         ? ""
                         : new Date(row.original.expiration_date) < new Date()
-                          ? "bg-yellow-50 dark:bg-yellow-950 hover:bg-yellow-100 dark:hover:bg-yellow-900"
+                          ? "text-yellow-700 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-950 hover:bg-yellow-100 dark:hover:bg-yellow-950/80 border-t border-yellow-500"
                           : ""
                       }`}
                     key={row.id}

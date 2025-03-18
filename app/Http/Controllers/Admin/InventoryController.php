@@ -50,7 +50,7 @@ class InventoryController extends Controller
         // Create a new product
         Product::create([
             'name' => $validated['name'],
-            'category' => $validated['category'],
+            // 'category' => $validated['category'],
             'stock' => $validated['stock'],
             'selling_price' => $validated['selling_price'],
             'market_price' => $validated['market_price'],
@@ -58,7 +58,7 @@ class InventoryController extends Controller
             'image' => $path,
         ]);
 
-        return Redirect::route('inventory.index')->with('success', 'Product has been added.');
+        return Redirect::route('inventory.index')->with('success', $validated['name'] . ' has been added.');
     }
 
     /**
@@ -114,7 +114,7 @@ class InventoryController extends Controller
         // Update product details
         $product->update([
             'name' => $validated['name'],
-            'category' => $validated['category'],
+            // 'category' => $validated['category'],
             'stock' => $validated['stock'],
             'selling_price' => $validated['selling_price'],
             'market_price' => $validated['market_price'],
@@ -122,7 +122,7 @@ class InventoryController extends Controller
             'image' => $path,
         ]);
 
-        return Redirect::route('inventory.show', $product->id)->with('update', 'Product has been update.');
+        return Redirect::route('inventory.show', $product->id)->with('update', str($product->name) . ' has been updated.');
     }
 
     /**
@@ -136,9 +136,13 @@ class InventoryController extends Controller
             return Redirect::back()->with('error', 'Product not found.');
         }
 
-        Storage::disk('public')->delete($product->image);
+        if (!empty($product->image)) {
+            Storage::disk('public')->delete($product->image);
+        }
+
         $product->delete();
 
-        return Redirect::back()->with('success', 'Product has been deleted.');
+        return Redirect::route('inventory.index')->with('success', "{$product->name} has been deleted.");
     }
+
 }

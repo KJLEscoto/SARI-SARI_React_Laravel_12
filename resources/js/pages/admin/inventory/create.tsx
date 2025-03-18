@@ -10,7 +10,7 @@ import { X, Plus } from "lucide-react";
 
 type ProductForm = {
   name: string;
-  category: string;
+  // category: string;
   stock: number | string;
   selling_price: number | string;
   market_price: number | string;
@@ -26,7 +26,7 @@ export default function Create() {
 
   const { data, setData, post, processing, errors, reset } = useForm<ProductForm>({
     name: '',
-    category: '',
+    // category: '',
     stock: '',
     selling_price: '',
     market_price: '',
@@ -65,8 +65,8 @@ export default function Create() {
       <main className="flex flex-col gap-4 p-4">
         <form className='flex flex-col gap-5' onSubmit={createProduct}>
 
-          <section className='w-full flex justify-between items-center'>
-            <h1 className="text-2xl font-semibold">Add Product</h1>
+          <section className='w-full flex flex-wrap gap-3 justify-between items-center'>
+            <h1 className="text-2xl font-semibold text-nowrap">Add Product</h1>
 
             <div className="flex justify-end gap-3 col-span-2">
               <Link href={route('inventory.index')}>
@@ -76,30 +76,24 @@ export default function Create() {
                 </Button>
               </Link>
               <Button type="submit" disabled={processing}>
-                Add Product
+                Submit
                 <Plus className="w-4 h-4" />
               </Button>
             </div>
           </section>
 
-          <div className='grid grid-cols-3 gap-5'>
+          <div className='grid md:grid-cols-3 grid-cols-1 gap-5'>
             <section className="space-y-1">
               <Label htmlFor="name"> Product Name</Label>
               <Input id="name" type="text" value={data.name} onChange={(e) => setData('name', e.target.value)} required />
               <InputError message={errors.name} />
             </section>
 
-            <section className="space-y-1">
+            {/* <section className="space-y-1">
               <Label htmlFor="name">Category</Label>
               <Input id="category" type="text" value={data.category} onChange={(e) => setData('category', e.target.value)} required />
               <InputError message={errors.category} />
-            </section>
-
-            <section className="space-y-1">
-              <Label htmlFor="stock">Stock Quantity</Label>
-              <Input id="stock" type="number" placeholder='0' value={data.stock} onChange={(e) => setData('stock', Number(e.target.value))} required />
-              <InputError message={errors.stock} />
-            </section>
+            </section> */}
 
             <section className="space-y-1">
               <Label htmlFor="market_price">Market Price</Label>
@@ -111,6 +105,12 @@ export default function Create() {
               <Label htmlFor="selling_price">Selling Price</Label>
               <Input id="selling_price" type="number" placeholder='0.00' step='0.01' value={data.selling_price} onChange={(e) => setData('selling_price', Number(e.target.value))} required />
               <InputError message={errors.selling_price} />
+            </section>
+
+            <section className="space-y-1">
+              <Label htmlFor="stock">Stock Quantity</Label>
+              <Input id="stock" type="number" placeholder='0' value={data.stock} onChange={(e) => setData('stock', Number(e.target.value))} required />
+              <InputError message={errors.stock} />
             </section>
 
             <section className="space-y-1">
