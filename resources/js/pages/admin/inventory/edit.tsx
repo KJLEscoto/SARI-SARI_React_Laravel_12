@@ -154,7 +154,7 @@ export default function Edit({ product }: { product: Product }) {
                   {product.image && (
                     <img
                       src={`/storage/${product.image}`}
-                      alt="Current Product Image"
+                      alt={`${product.name} image`}
                       className={`w-fit h-fit rounded-md transition-opacity duration-300 ${image ? 'opacity-30' : 'opacity-100'}`}
                     />
                   )}

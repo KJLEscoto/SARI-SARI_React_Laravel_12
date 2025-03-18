@@ -162,11 +162,11 @@ export default function Index({ products, inventory_count }: { products: Product
           <h1 className="text-2xl font-semibold relative w-fit">Products <span className="absolute -right-6 top-0 text-sm">{inventory_count}</span></h1>
           <div className="flex gap-5">
             <section className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-red-200 border border-red-500 shadow"></div>
+              <div className="w-3 h-3 bg-red-200 dark:bg-red-950 border border-red-500 shadow"></div>
               <p className="text-sm">Low Stock</p>
             </section>
             <section className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-yellow-200 border border-yellow-500 shadow"></div>
+              <div className="w-3 h-3 bg-yellow-200 dark:bg-yellow-950 border border-yellow-500 shadow"></div>
               <p className="text-sm">Expired</p>
             </section>
           </div>
@@ -207,11 +207,11 @@ export default function Index({ products, inventory_count }: { products: Product
                 table.getRowModel().rows.map(row => (
                   <TableRow
                     className={`${row.original.stock <= 5
-                      ? "bg-red-100 hover:bg-red-200"
+                      ? "bg-red-100 dark:bg-red-950 hover:bg-red-200 dark:hover:bg-red-900"
                       : row.original.expiration_date === null || row.original.expiration_date === undefined
-                        ? "" // Default background
+                        ? ""
                         : new Date(row.original.expiration_date) < new Date()
-                          ? "bg-yellow-50 hover:bg-yellow-100"
+                          ? "bg-yellow-50 dark:bg-yellow-950 hover:bg-yellow-100 dark:hover:bg-yellow-900"
                           : ""
                       }`}
                     key={row.id}

@@ -59,39 +59,39 @@ export default function Show({ product, profit }: { product: Product, profit: nu
         <section className="flex lg:flex-row flex-col gap-5">
           <img src={product.image ? `/storage/${product.image}` : "/images/no_image.jpeg"} alt={`${product.name} image`} className="w-1/4 h-fit rounded-lg object-cover" onError={(e) => (e.currentTarget.src = "/images/no_image.jpeg")} />
 
-          <div className='w-full divide-y divide-gray-200 *:p-5'>
+          <div className='w-full divide-y *:p-5'>
             <section className='flex justify-between gap-5'>
-              <div>
+              <div className='space-y-1'>
                 <p className='text-2xl font-bold'>{product.name}</p>
-                <p className='bg-gray-300 text-xs font-bold text-gray-500 w-fit px-3 py-1 rounded-full'>{product.category}</p>
+                <p className='bg-gray-300 dark:bg-gray-800 text-xs font-bold text-gray-500 dark:text-gray-300 w-fit px-3 py-1 rounded-full'>{product.category}</p>
               </div>
-              <div className='text-end text-sm'>
-                <p className='text-black'>Stock : <strong>{product.stock}</strong></p>
-                <p className='text-black'>Sold : <strong>0</strong></p>
+              <div className='text-end text-sm text-black dark:text-white space-y-1'>
+                <p>Available Stock : <strong>{product.stock}</strong></p>
+                <p>Total Sold : <strong>0</strong></p>
               </div>
             </section>
 
             <section className='flex justify-between gap-5'>
               <div className='flex flex-row gap-3'>
-                <div className='p-3 bg-black text-white rounded-lg'>
+                <div className='p-3 bg-black dark:bg-white text-white dark:text-black rounded-lg'>
                   <p className='text-xs'>Selling Price</p>
                   <p className='text-lg font-semibold'>₱{product.selling_price}</p>
                 </div>
-                <div className='p-3 border rounded-lg'>
+                <div className='p-3 border dark:border-white/50 text-black dark:text-white rounded-lg'>
                   <p className='text-xs'>Market Price</p>
-                  <p className='text-black text-lg font-semibold'>₱{product.market_price}</p>
+                  <p className='text-lg font-semibold'>₱{product.market_price}</p>
                 </div>
               </div>
               <div className='text-end text-sm'>
-                <p className={profit < 1 ? 'text-red-700' : 'text-green-700'}>
-                  {profit < 0 ? 'Loss' : 'Gain'} : <strong>₱{profit.toFixed(2)}</strong>
+                <p className={profit < 1 ? 'text-red-700 dark:text-red-500' : 'text-green-700 dark:text-green-500'}>
+                  {profit < 0 ? 'Profit Loss' : 'Profit Gain'} : <strong>₱{profit}</strong>
                 </p>
               </div>
             </section>
 
             <section className="flex flex-col gap-3">
               <h1 className='font-semibold'>More Details</h1>
-              <div className='*:p-5 *:text-gray-700 border border-gray-100 *:hover:bg-gray-50 rounded-lg divide-y divide-gray-200'>
+              <div className='*:p-5 *:text-gray-700 *:dark:text-gray-300 border *:hover:bg-gray-50 *:dark:hover:bg-black rounded-lg divide-y overflow-hidden'>
                 <p><span className='font-semibold text-sm'>Product ID :</span> {product.id}</p>
                 <p><span className='font-semibold text-sm'>Expiration Date :</span> {dayjs(product.expiration_date).format('MMM DD, YYYY ') || 'N/A'}</p>
                 <p><span className='font-semibold text-sm'>Product Added :</span> {dayjs(product.created_at).format('MMM DD, YYYY | hh:mm a')}</p>
