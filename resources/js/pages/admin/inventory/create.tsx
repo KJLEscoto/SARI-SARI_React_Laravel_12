@@ -119,6 +119,9 @@ export default function Create() {
                 id="expiration_date"
                 type="date"
                 value={data.expiration_date || ""}
+                min={new Date(new Date().setDate(new Date().getDate() + 1))
+                  .toISOString()
+                  .split("T")[0]}
                 onChange={(e) => setData("expiration_date", e.target.value)}
               />
               <InputError message={errors.expiration_date} />

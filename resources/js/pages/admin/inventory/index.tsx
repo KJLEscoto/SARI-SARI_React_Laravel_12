@@ -158,7 +158,19 @@ export default function Index({ products, inventory_count }: { products: Product
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Inventory" />
       <div className="flex flex-col gap-4 p-4">
-        <h1 className="text-2xl font-semibold relative w-fit">Products <span className="absolute -right-6 top-0 text-sm">{inventory_count}</span></h1>
+        <section className="flex justify-between gap-4">
+          <h1 className="text-2xl font-semibold relative w-fit">Products <span className="absolute -right-6 top-0 text-sm">{inventory_count}</span></h1>
+          <div className="flex gap-5">
+            <section className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-red-200 border border-red-500 shadow"></div>
+              <p className="text-sm">Low Stock</p>
+            </section>
+            <section className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-yellow-200 border border-yellow-500 shadow"></div>
+              <p className="text-sm">Expired</p>
+            </section>
+          </div>
+        </section>
 
         <section className="flex justify-between">
           <div className="flex justify-start items-center gap-5">
@@ -194,7 +206,13 @@ export default function Index({ products, inventory_count }: { products: Product
               {table.getRowModel().rows.length ? (
                 table.getRowModel().rows.map(row => (
                   <TableRow
-                    className={`${row.original.stock <= 0 ? "bg-red-100 hover:bg-red-200" : ""
+                    className={`${row.original.stock <= 5
+                      ? "bg-red-100 hover:bg-red-200"
+                      : row.original.expiration_date === null || row.original.expiration_date === undefined
+                        ? "" // Default background
+                        : new Date(row.original.expiration_date) < new Date()
+                          ? "bg-yellow-50 hover:bg-yellow-100"
+                          : ""
                       }`}
                     key={row.id}
                   >

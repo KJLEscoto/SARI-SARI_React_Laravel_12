@@ -139,6 +139,6 @@ class InventoryController extends Controller
         Storage::disk('public')->delete($product->image);
         $product->delete();
 
-        return Redirect::back()->with('success', 'Product deleted successfully.');
+        return Redirect::back()->with('success', 'Product has been deleted.');
     }
 }
