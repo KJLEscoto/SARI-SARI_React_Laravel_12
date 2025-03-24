@@ -54,6 +54,18 @@ export interface Product {
     updated_at: string;
 }
 
+export interface Customer {
+    id: number;
+    image?: string | null;
+    name: string;
+    // category: string;
+    phone: string;
+    address: string;
+    balance: number;
+    created_at: string;
+    updated_at: string;
+}
+
 export interface Category {
     id: number;
     type: string;

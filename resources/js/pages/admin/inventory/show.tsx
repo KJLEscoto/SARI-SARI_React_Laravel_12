@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { ChevronLeft, Edit3, Trash2 } from "lucide-react";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { MoreDetails } from '@/components/more-details';
 
 
 export default function Show({ product, profit }: { product: Product, profit: number }) {
@@ -101,11 +102,11 @@ export default function Show({ product, profit }: { product: Product, profit: nu
               <div className='flex flex-row gap-3'>
                 <div className='p-3 bg-black dark:bg-white text-white dark:text-black rounded-lg'>
                   <p className='text-xs'>Selling Price</p>
-                  <p className='text-lg font-semibold'>₱{product.selling_price}</p>
+                  <p className='text-lg font-semibold'>₱{Number(product.selling_price).toLocaleString("en-PH")}</p>
                 </div>
                 <div className='p-3 border dark:border-white/50 text-black dark:text-white rounded-lg'>
                   <p className='text-xs'>Market Price</p>
-                  <p className='text-lg font-semibold'>₱{product.market_price}</p>
+                  <p className='text-lg font-semibold'>₱{Number(product.market_price).toLocaleString("en-PH")}</p>
                 </div>
               </div>
               <div className='text-end text-sm'>
@@ -118,15 +119,12 @@ export default function Show({ product, profit }: { product: Product, profit: nu
             <section className="flex flex-col gap-3">
               <h1 className='font-semibold'>More Details</h1>
               <div className='*:p-5 *:text-gray-700 *:dark:text-gray-300 border *:hover:bg-gray-50 *:dark:hover:bg-black rounded-lg divide-y overflow-hidden'>
-                <p><span className='font-semibold text-sm'>Product ID :</span> {product.id}</p>
-                <p>
-                  <span className="font-semibold text-sm">Expiration Date :</span>{" "}
-                  {product.expiration_date
-                    ? dayjs(product.expiration_date).format("MMM DD, YYYY")
-                    : "N/A"}
-                </p>
-                <p><span className='font-semibold text-sm'>Product Added :</span> {dayjs(product.created_at).format('MMM DD, YYYY | hh:mm a')}</p>
-                <p><span className='font-semibold text-sm'>Last Update :</span> {dayjs(product.updated_at).format('MMM DD, YYYY | hh:mm a')}</p>
+                <MoreDetails label="Product ID" value={product.id} />
+                <MoreDetails label="Expiration Date" value={product.expiration_date
+                  ? dayjs(product.expiration_date).format("MMM DD, YYYY")
+                  : "N/A"} />
+                <MoreDetails label="Product Added" value={dayjs(product.created_at).format('MMM DD, YYYY | hh:mm a')} />
+                <MoreDetails label="Last Update" value={dayjs(product.updated_at).format('MMM DD, YYYY | hh:mm a')} />
               </div>
             </section>
           </div>

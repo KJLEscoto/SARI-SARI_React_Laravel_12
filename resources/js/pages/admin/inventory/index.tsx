@@ -21,7 +21,7 @@ import { toast } from "sonner";
 import dayjs from "dayjs";
 
 const breadcrumbs: BreadcrumbItem[] = [
-  { title: 'Inventory', href: '/inventory' },
+  { title: 'Inventory', href: '/admin/inventory' },
 ];
 
 export default function Index({ products, inventory_count }: { products: Product[]; inventory_count: number; }) {
@@ -77,7 +77,7 @@ export default function Index({ products, inventory_count }: { products: Product
       header: "Selling Price",
       cell: ({ row }) => {
         return (
-          <strong>₱{row.original.selling_price}</strong>
+          <strong>₱{Number(row.original.selling_price).toLocaleString("en-PH")}</strong>
         )
       },
     },
@@ -178,98 +178,118 @@ export default function Index({ products, inventory_count }: { products: Product
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Inventory" />
       <div className="flex flex-col gap-4 p-4">
-        <section className="flex justify-between gap-4">
-          <h1 className="text-2xl font-semibold relative w-fit">Products <span className="absolute -right-4 top-0 text-sm">{inventory_count}</span></h1>
-          <div className="flex gap-5">
-            <section className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-red-200 dark:bg-red-950 border border-red-500 shadow"></div>
-              <p className="text-sm">Low Stock</p>
+        {products.length ? (
+          <>
+            <section className="flex justify-between gap-4">
+              <h1 className="text-2xl font-semibold relative w-fit">Products <span className="absolute -right-5 top-0 text-sm">{inventory_count}</span></h1>
+              <div className="flex gap-5">
+                <section className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-red-200 dark:bg-red-950 border border-red-500 shadow"></div>
+                  <p className="text-sm">Low Stock</p>
+                </section>
+                <section className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-yellow-200 dark:bg-yellow-950 border border-yellow-500 shadow"></div>
+                  <p className="text-sm">Expired</p>
+                </section>
+              </div>
             </section>
-            <section className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-yellow-200 dark:bg-yellow-950 border border-yellow-500 shadow"></div>
-              <p className="text-sm">Expired</p>
-            </section>
-          </div>
-        </section>
 
-        <section className="flex justify-between">
-          <div className="flex relative justify-start items-center gap-5">
-            <Input
-              type="text"
-              placeholder="Search by name..."
-              value={search}
-              onChange={handleSearch}
-              className="w-80"
-            />
-            {search && (
-              <X
-                className="absolute right-3 text-gray-500 cursor-pointer hover:text-gray-700"
-                onClick={() => setSearch("")}
-                size={20}
-              />
-            )}
-          </div>
-          <Link href={route("inventory.create")}>
-            <Button variant="default" size="default">
-              <Plus className="w-4 h-4" />
-              Add Product
-            </Button>
-          </Link>
-        </section>
-        <TooltipProvider>
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map(headerGroup => (
-                <TableRow className="hover:bg-transparent" key={headerGroup.id}>
-                  {headerGroup.headers.map(header => (
-                    <TableHead key={header.id}>
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
+            <section className="flex justify-between">
+              <div className="flex relative justify-start items-center gap-5">
+                <Input
+                  type="text"
+                  placeholder="Search by name..."
+                  value={search}
+                  onChange={handleSearch}
+                  className="md:w-80 w-60"
+                />
+                {search && (
+                  <X
+                    className="absolute right-3 text-gray-500 cursor-pointer hover:text-gray-700"
+                    onClick={() => setSearch("")}
+                    size={20}
+                  />
+                )}
+              </div>
+              <Link href={route("inventory.create")}>
+                <Button variant="default" size="default">
+                  <Plus className="w-4 h-4" />
+                  Add Product
+                </Button>
+              </Link>
+            </section>
+
+            <TooltipProvider>
+              <Table>
+                <TableHeader>
+                  {table.getHeaderGroups().map(headerGroup => (
+                    <TableRow className="hover:bg-transparent" key={headerGroup.id}>
+                      {headerGroup.headers.map(header => (
+                        <TableHead key={header.id}>
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                        </TableHead>
+                      ))}
+                    </TableRow>
                   ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows.length ? (
-                table.getRowModel().rows.map(row => (
-                  <TableRow
-                    className={`${row.original.stock <= 5
-                      ? "text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-950 hover:bg-red-200 dark:hover:bg-red-950/80 border-t border-red-500"
-                      : row.original.expiration_date === null || row.original.expiration_date === undefined
-                        ? ""
-                        : new Date(row.original.expiration_date) < new Date()
-                          ? "text-yellow-700 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-950 hover:bg-yellow-100 dark:hover:bg-yellow-950/80 border-t border-yellow-500"
-                          : ""
-                      }`}
-                    key={row.id}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </TableHeader>
+                <TableBody>
+                  {table.getRowModel().rows.length ? (
+                    table.getRowModel().rows.map(row => (
+                      <TableRow
+                        className={`${row.original.stock <= 5
+                          ? "text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-950 hover:bg-red-200 dark:hover:bg-red-950/80 border-t border-red-500"
+                          : row.original.expiration_date === null || row.original.expiration_date === undefined
+                            ? ""
+                            : new Date(row.original.expiration_date) < new Date()
+                              ? "text-yellow-700 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-950 hover:bg-yellow-100 dark:hover:bg-yellow-950/80 border-t border-yellow-500"
+                              : ""
+                          }`}
+                        key={row.id}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id}>
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={columns.length} className="text-center">
+                        No results found.
                       </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="text-center">No results found.</TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TooltipProvider>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TooltipProvider>
 
-        <div className="flex justify-between items-center p-3">
-          <div>Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}</div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-              <ChevronLeft className="w-4 h-4" /> Previous
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-              Next <ChevronRight className="w-4 h-4" />
-            </Button>
+            <div className="flex justify-between items-center p-3">
+              <div>
+                Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+                  <ChevronLeft className="w-4 h-4" /> Previous
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+                  Next <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="w-full h-40 items-center flex flex-col gap-3 justify-center">
+            <p className="text-center md:text-2xl text-lg">No results found</p>
+            <Link href={route("inventory.create")}>
+              <Button variant="default" size="default">
+                <Plus className="w-4 h-4" />
+                Add Product
+              </Button>
+            </Link>
           </div>
-        </div>
+        )}
+
       </div>
     </AppLayout >
   );
