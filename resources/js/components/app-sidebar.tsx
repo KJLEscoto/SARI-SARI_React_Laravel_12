@@ -21,18 +21,18 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Github Repo',
-        href: 'https://github.com/KJLEscoto/SARI-SARI_React_Laravel_12.git',
-        icon: Folder,
-    },
-    {
-        title: 'Laravel Docx',
-        href: 'https://laravel.com/docs/starter-kits',
-        icon: BookOpen,
-    },
-];
+// const footerNavItems: NavItem[] = [
+//     {
+//         title: 'Github Repo',
+//         href: 'https://github.com/KJLEscoto/SARI-SARI_React_Laravel_12.git',
+//         icon: Folder,
+//     },
+//     {
+//         title: 'Laravel Docx',
+//         href: 'https://laravel.com/docs/starter-kits',
+//         icon: BookOpen,
+//     },
+// ];
 
 export function AppSidebar() {
     return (
@@ -54,7 +54,7 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
+                {/* <NavFooter items={footerNavItems} className="mt-auto" /> */}
                 <SidebarMenuButton size="lg" asChild variant="default">
                     <div className='flex'>
                         <div className="text-sidebar-accent-foreground flex aspect-square size-8 items-center justify-center">

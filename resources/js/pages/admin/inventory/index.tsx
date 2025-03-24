@@ -9,7 +9,7 @@ import {
 } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, ChevronRight, Plus, Eye, Edit3, Trash2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Eye, Edit3, Trash2, X } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -193,7 +193,7 @@ export default function Index({ products, inventory_count }: { products: Product
         </section>
 
         <section className="flex justify-between">
-          <div className="flex justify-start items-center gap-5">
+          <div className="flex relative justify-start items-center gap-5">
             <Input
               type="text"
               placeholder="Search by name..."
@@ -201,6 +201,13 @@ export default function Index({ products, inventory_count }: { products: Product
               onChange={handleSearch}
               className="w-80"
             />
+            {search && (
+              <X
+                className="absolute right-3 text-gray-500 cursor-pointer hover:text-gray-700"
+                onClick={() => setSearch("")}
+                size={20}
+              />
+            )}
           </div>
           <Link href={route("inventory.create")}>
             <Button variant="default" size="default">
