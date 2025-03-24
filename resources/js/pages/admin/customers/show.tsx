@@ -49,8 +49,8 @@ export default function Show({ customer }: { customer: Customer }) {
           </Link>
           <Link href={route("customers.edit", customer.id)}>
             <Button variant="default" size="sm">
-              <Edit3 className="w-4 h-4" />
               Edit Account
+              <Edit3 className="w-4 h-4" />
             </Button>
           </Link>
         </section>
@@ -66,7 +66,7 @@ export default function Show({ customer }: { customer: Customer }) {
               </div>
             </section>
 
-            <section className='flex justify-between items-center flex-wrap-reverse gap-5'>
+            <section className='flex justify-between items-center flex-wrap gap-3'>
               <div className='space-y-1'>
                 <p className=''>Outstanding Balance :
                   <span className={`font-semibold ml-1.5

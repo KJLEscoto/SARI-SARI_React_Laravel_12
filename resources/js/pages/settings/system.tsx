@@ -36,14 +36,14 @@ export default function System() {
         <div className="space-y-6">
           <HeadingSmall title="About" description="The current version and details of the system" />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 grid-cols-1 md:gap-4 gap-2">
             {links.map((link) => (
               <div key={link.title}>
                 <a
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between gap-2 text-sm hover:bg-gray-100 rounded-md p-2 border border-gray-100"
+                  className="flex items-center justify-between gap-2 text-sm hover:bg-gray-50 dark:hover:bg-black rounded-md p-2 border"
                 >
                   {link.title}
                   <link.icon className="text-gray-400" size="16" />

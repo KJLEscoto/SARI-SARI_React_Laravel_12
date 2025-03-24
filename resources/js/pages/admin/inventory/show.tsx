@@ -87,31 +87,31 @@ export default function Show({ product, profit }: { product: Product, profit: nu
           <img src={product.image ? `/storage/${product.image}` : "/images/no_image.jpeg"} alt={`${product.name} image`} className="w-1/4 h-fit rounded-lg object-cover" onError={(e) => (e.currentTarget.src = "/images/no_image.jpeg")} />
 
           <div className='w-full divide-y *:p-5'>
-            <section className='flex justify-between gap-5'>
-              <div className='space-y-1'>
+            <section className='flex gap-3 md:flex-row flex-col w-full'>
+              <div className='space-y-1 w-full'>
                 <p className='text-2xl font-bold'>{product.name}</p>
                 {/* <p className='bg-gray-300 dark:bg-gray-800 text-xs font-bold text-gray-500 dark:text-gray-300 w-fit px-3 py-1 rounded-full'>{product.category}</p> */}
               </div>
-              <div className='text-end text-sm text-black dark:text-white space-y-1'>
+              <div className='text-end w-full text-sm text-black dark:text-white space-y-1 *:text-nowrap'>
                 <p>Available Stock : <strong>{product.stock}</strong></p>
                 <p>Total Sold : <strong>0</strong></p>
               </div>
             </section>
 
-            <section className='flex justify-between gap-5'>
-              <div className='flex flex-row gap-3'>
-                <div className='p-3 bg-black dark:bg-white text-white dark:text-black rounded-lg'>
+            <section className='flex justify-between flex-wrap gap-3'>
+              <div className='flex flex-row flex-wrap gap-3 w-full'>
+                <div className='p-3 bg-black dark:bg-white text-white dark:text-black rounded-lg text-nowrap'>
                   <p className='text-xs'>Selling Price</p>
                   <p className='text-lg font-semibold'>₱{Number(product.selling_price).toLocaleString("en-PH")}</p>
                 </div>
-                <div className='p-3 border dark:border-white/50 text-black dark:text-white rounded-lg'>
+                <div className='p-3 border dark:border-white/50 text-black dark:text-white rounded-lg text-nowrap'>
                   <p className='text-xs'>Market Price</p>
                   <p className='text-lg font-semibold'>₱{Number(product.market_price).toLocaleString("en-PH")}</p>
                 </div>
               </div>
-              <div className='text-end text-sm'>
+              <div className='text-end text-sm text-nowrap w-full'>
                 <p className={profit < 1 ? 'text-red-700 dark:text-red-500' : 'text-green-700 dark:text-green-500'}>
-                  {profit < 0 ? 'Loss' : 'Gain'} : <strong>₱{profit}</strong>
+                  {profit < 0 ? 'Loss' : 'Gain'} : <strong>₱ {Number(profit).toLocaleString("en-PH")}</strong>
                 </p>
               </div>
             </section>
