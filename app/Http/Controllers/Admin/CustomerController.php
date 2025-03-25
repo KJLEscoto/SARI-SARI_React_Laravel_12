@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
 class CustomerController extends Controller
@@ -49,6 +51,30 @@ class CustomerController extends Controller
         }
 
         return Inertia::render('admin/customers/show', compact('customer'));
+    }
+
+    public function updateBalance(Request $request, string $id)
+    {
+        // Validate the request
+        $validate = $request->validate([
+            'update_balance' => 'required|numeric|min:0.01',
+            'operator' => 'required|in:add,subtract',
+        ]);
+
+        // Find the customer
+        $customer = Customer::findOrFail($id);
+
+        // Update balance
+        $amount = (float) $request->update_balance;
+        if ($request->operator === 'add') {
+            $customer->balance += $amount;
+        } else {
+            $customer->balance -= $amount;
+        }
+
+        $customer->save();
+
+        return back()->with('update', 'Balance has been updated.');
     }
 
     /**
