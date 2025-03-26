@@ -1,7 +1,7 @@
-import { type BreadcrumbItem, type SharedData } from '@/types';
+import { Flash, type BreadcrumbItem, type SharedData } from '@/types';
 import { Transition } from '@headlessui/react';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import { FormEventHandler, useEffect } from 'react';
 
 import DeleteUser from '@/components/delete-user';
 import HeadingSmall from '@/components/heading-small';
@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
+import ImageUser from '@/components/image-user';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -105,7 +106,9 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                         )}
 
                         <div className="flex items-center gap-4">
-                            <Button disabled={processing}>Save</Button>
+                            <Button
+                                disabled={processing || (data.name === auth.user.name && data.email === auth.user.email)}
+                            >Save</Button>
 
                             <Transition
                                 show={recentlySuccessful}
@@ -119,8 +122,8 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                         </div>
                     </form>
                 </div>
-
-                <DeleteUser />
+                <ImageUser user={auth.user} />
+                {/* <DeleteUser /> */}
             </SettingsLayout>
         </AppLayout>
     );

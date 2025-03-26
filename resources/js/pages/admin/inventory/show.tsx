@@ -1,10 +1,8 @@
 import AppLayout from '@/layouts/app-layout';
-import { Flash, Product, type BreadcrumbItem } from '@/types';
+import { Product, type BreadcrumbItem } from '@/types';
 import { Button } from '@/components/ui/button';
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import dayjs from "dayjs";
-import { useEffect } from 'react';
-import { toast } from 'sonner';
 import { ChevronLeft, Edit3, Trash2 } from "lucide-react";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { MoreDetails } from '@/components/more-details';
@@ -22,20 +20,10 @@ export default function Show({ product, profit }: { product: Product, profit: nu
     },
   ];
 
-  const { flash } = usePage<{ flash: Flash }>().props;
 
   const handleDelete = (id: number) => {
     router.delete(route("inventory.destroy", { id }));
   };
-
-  useEffect(() => {
-    if (flash.update) {
-      toast.info(flash.update);
-    }
-    else if (flash.error) {
-      toast.error(flash.error);
-    }
-  }, [flash]);
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>

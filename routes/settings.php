@@ -6,10 +6,13 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::middleware('auth')->group(function () {
-    Route::redirect('admin/settings', 'settings/profile');
+    Route::redirect('admin/settings', 'settings/profile')->name('settings');
 
     Route::get('admin/settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('admin/settings/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    Route::post('admin/settings/profile', [ProfileController::class, 'updateImage'])->name('profile.updateImage');
+
     Route::delete('admin/settings/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('admin/settings/password', [PasswordController::class, 'edit'])->name('password.edit');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreProductRequest extends FormRequest
@@ -23,7 +24,7 @@ class StoreProductRequest extends FormRequest
     {
         return [
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480',
-            'name' => 'required|string|max:255|unique:products,name',
+            'name' => 'required|string|max:255|unique:' . Product::class,
             // 'category' => 'required|string|max:255',
             'stock' => 'required|integer|min:0',
             'selling_price' => 'required|numeric|min:0',
@@ -37,7 +38,7 @@ class StoreProductRequest extends FormRequest
         return [
             'image.image' => 'The file must be an image.',
             'image.mimes' => 'Only JPEG, PNG, JPG, and GIF formats are allowed.',
-            'image.max' => 'The image size must not exceed 2MB.',
+            'image.max' => 'The image size must not exceed 20MB.',
             'name.required' => 'Product name is required.',
             'name.unique' => 'A product with this name already exists.',
             // 'category.required' => 'Category is required.',

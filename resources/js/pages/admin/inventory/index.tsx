@@ -1,7 +1,7 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback } from "react";
 import AppLayout from '@/layouts/app-layout';
-import { Flash, Product, type BreadcrumbItem } from '@/types';
-import { Head, Link, usePage, router } from '@inertiajs/react';
+import { Product, type BreadcrumbItem } from '@/types';
+import { Head, Link, router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import {
   ColumnDef, useReactTable, getCoreRowModel, flexRender,
@@ -17,7 +17,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { toast } from "sonner";
 import dayjs from "dayjs";
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -27,16 +26,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Index({ products, inventory_count }: { products: Product[]; inventory_count: number; }) {
   // Search State
   const [search, setSearch] = useState("");
-  const { flash } = usePage<{ flash: Flash }>().props;
-
-  useEffect(() => {
-    if (flash.success) {
-      toast.success(flash.success);
-    }
-    else if (flash.error) {
-      toast.error(flash.error);
-    }
-  }, [flash]);
 
   // Memoized Search Filtering
   const filteredProducts = useMemo(() => {

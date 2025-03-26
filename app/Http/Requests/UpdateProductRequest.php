@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateProductRequest extends FormRequest
 {
@@ -22,7 +24,7 @@ class UpdateProductRequest extends FormRequest
         // Get the product ID from the route
         return [
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480',
-            'name' => 'required|string|max:255|unique:products,name,' . $this->route('inventory'),
+            'name' => 'required|string|max:255|' . Rule::unique('products', 'name')->ignore($this->route('inventory')),
             // 'category' => 'required|string|max:255',
             'stock' => 'required|integer|min:0',
             'selling_price' => 'required|numeric|min:0',

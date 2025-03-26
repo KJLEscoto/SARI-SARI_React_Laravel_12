@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Customer;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreCustomerRequest extends FormRequest
@@ -22,7 +23,7 @@ class StoreCustomerRequest extends FormRequest
         // Get the product ID from the route
         return [
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480',
-            'name' => 'required|string|max:255|unique:customers,name,' . $this->route('customer'),
+            'name' => 'required|string|max:255|unique:' . Customer::class,
             'phone' => 'required|string|regex:/^09\d{9}$/',
             'address' => 'nullable',
         ];

@@ -1,7 +1,7 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback } from "react";
 import AppLayout from '@/layouts/app-layout';
-import { Customer, Flash, type BreadcrumbItem } from '@/types';
-import { Head, Link, usePage, router } from '@inertiajs/react';
+import { Customer, type BreadcrumbItem } from '@/types';
+import { Head, Link } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import {
   ColumnDef, useReactTable, getCoreRowModel, flexRender,
@@ -9,8 +9,7 @@ import {
 } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, ChevronRight, Plus, Eye, Edit3, Trash2, X } from "lucide-react";
-import { toast } from "sonner";
+import { ChevronLeft, ChevronRight, Plus, Eye, Edit3, X } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -18,7 +17,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { getBalanceColor } from "@/lib/utils";
-
+import { useInitials } from "@/hooks/use-initials";
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Customers', href: '/admin/customers' },
@@ -27,16 +26,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Index({ customers_count, customers }: { customers_count: number; customers: Customer[]; }) {
   // Search State
   const [search, setSearch] = useState("");
-  const { flash } = usePage<{ flash: Flash }>().props;
-
-  useEffect(() => {
-    if (flash.success) {
-      toast.success(flash.success);
-    }
-    else if (flash.error) {
-      toast.error(flash.error);
-    }
-  }, [flash]);
+  const getInitials = useInitials();
 
   // Memoized Search Filtering
   const filteredCustomers = useMemo(() => {
@@ -53,14 +43,21 @@ export default function Index({ customers_count, customers }: { customers_count:
       cell: ({ row }) => {
         const imageUrl = row.original.image
           ? `/storage/${row.original.image}`
-          : "/images/no_image.jpeg";
-        return (
+          : "/images/no_user.jpg";
+
+        return row.original.image ? (
           <img
             src={imageUrl}
             alt={`${row.original.name} image`}
-            className="w-16 h-16 object-cover rounded-md"
-            onError={(e) => (e.currentTarget.src = "/images/no_image.jpeg")} // Handle broken images
+            className="w-16 h-16 object-cover rounded-full"
+            onError={(e) => (e.currentTarget.src = "/images/no_user.jpg")} // Handle broken images
           />
+        ) : (
+          <div>
+            <div className="w-16 h-16 object-cover rounded-full flex items-center justify-center bg-black/70 dark:bg-[#404040] text-lg text-white">
+              {getInitials(row.original.name)}
+            </div>
+          </div>
         );
       },
     },

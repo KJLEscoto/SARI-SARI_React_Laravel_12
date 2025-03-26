@@ -1,10 +1,9 @@
 import AppLayout from '@/layouts/app-layout';
-import { Customer, Flash, type BreadcrumbItem } from '@/types';
+import { Customer, type BreadcrumbItem } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import dayjs from "dayjs";
-import { FormEventHandler, useEffect, useRef } from 'react';
-import { toast } from 'sonner';
+import { FormEventHandler, useRef } from 'react';
 import { ChevronLeft, Edit3, Minus, Plus } from "lucide-react";
 import { MoreDetails } from '@/components/more-details';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -13,6 +12,7 @@ import InputError from '@/components/input-error';
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { getBalanceColor } from '@/lib/utils';
+import { useInitials } from '@/hooks/use-initials';
 
 export default function Show({ customer }: { customer: Customer }) {
   const breadcrumbs: BreadcrumbItem[] = [
@@ -22,11 +22,14 @@ export default function Show({ customer }: { customer: Customer }) {
 
   const updateBalance = useRef<HTMLInputElement>(null);
   const operatorButtons = useRef<HTMLInputElement>(null);
-  const { data, setData, patch, reset, clearErrors, processing } = useForm<{ update_balance: number | string, operator: string }>({
+  const { data, setData, reset, clearErrors, processing } = useForm<{ update_balance: number | string, operator: string }>({
     update_balance: '',
     operator: '',
   });
+
   const { errors } = usePage().props;
+  const getInitials = useInitials();
+
 
   const updateBalanceForm: FormEventHandler = (e) => {
     e.preventDefault();
@@ -49,15 +52,6 @@ export default function Show({ customer }: { customer: Customer }) {
     clearErrors();
     reset();
   };
-
-  const { flash } = usePage<{ flash: Flash }>().props;
-  useEffect(() => {
-    if (flash.update) {
-      toast.info(flash.update);
-    } else if (flash.error) {
-      toast.error(flash.error);
-    }
-  }, [flash]);
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -82,12 +76,22 @@ export default function Show({ customer }: { customer: Customer }) {
 
         {/* Customer Details */}
         <section className="flex md:flex-row flex-col md:items-start items-center gap-5">
-          <img
-            src={customer.image ? `/storage/${customer.image}` : "/images/no_image.jpeg"}
-            alt={`${customer.name} image`}
-            className="w-1/4 h-fit rounded-lg object-cover"
-            onError={(e) => (e.currentTarget.src = "/images/no_image.jpeg")}
-          />
+          {
+            customer.image ? (
+              <img
+                src={customer.image ? `/storage/${customer.image}` : "/images/no_user.jpg"}
+                alt={`${customer.name} image`}
+                className="w-40 h-40 object-cover rounded-full"
+                onError={(e) => (e.currentTarget.src = "/images/no_user.jpg")} // Handle broken images
+              />
+            ) : (
+              <div>
+                <div className="w-40 h-40 object-cover rounded-full flex items-center justify-center bg-black/70 dark:bg-[#404040] text-lg text-white">
+                  {getInitials(customer.name)}
+                </div>
+              </div>
+            )
+          }
 
           <div className='w-full divide-y *:p-5'>
             <section className='flex justify-between gap-5'>
@@ -109,7 +113,7 @@ export default function Show({ customer }: { customer: Customer }) {
               {/* Update Balance Dialog */}
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant='secondary' size='default'>
+                  <Button variant='outline' size='default'>
                     Update Balance
                     <Minus className="w-4 h-4" />
                   </Button>

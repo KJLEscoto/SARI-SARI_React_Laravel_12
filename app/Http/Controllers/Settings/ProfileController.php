@@ -4,10 +4,14 @@ namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
+use App\Http\Requests\Settings\UpdateProfileImageREquest;
+use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -38,6 +42,34 @@ class ProfileController extends Controller
         $request->user()->save();
 
         return to_route('profile.edit');
+    }
+
+    public function updateImage(UpdateProfileImageRequest $request)
+    {
+        $user = Auth::user();
+
+
+        if (!$user instanceof User) {
+            abort(403, 'Unauthorized');
+        }
+
+        $validated = $request->validated();
+
+        if ($request->hasFile('image')) {
+            if ($user->image) {
+                Storage::disk('public')->delete($user->image);
+            }
+            $path = Storage::disk('public')->put('user', $request->file('image'));
+        } else {
+            $path = $user->image; // Keep the old image
+        }
+
+        // Update customer details
+        $user->update([
+            'image' => $path,
+        ]);
+
+        return Redirect::back()->with('update', 'Profile has been updated.');
     }
 
     /**
