@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 Route::middleware('auth')->group(function () {
@@ -22,7 +24,12 @@ Route::middleware('auth')->group(function () {
         return Inertia::render('settings/appearance');
     })->name('appearance');
 
+
     Route::get('admin/settings/system', function () {
-        return Inertia::render('settings/system');
+        $files = Storage::files('backup');
+        return Inertia::render('settings/system', compact('files'));
     })->name('system');
+
+    Route::get('/backup/download/{file}', [BackupController::class, 'download'])->name('backup.download');
+
 });
