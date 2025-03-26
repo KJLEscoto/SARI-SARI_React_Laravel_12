@@ -17,6 +17,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { getBalanceColor } from "@/lib/utils";
 
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -53,7 +54,6 @@ export default function Index({ customers_count, customers }: { customers_count:
         const imageUrl = row.original.image
           ? `/storage/${row.original.image}`
           : "/images/no_image.jpeg";
-
         return (
           <img
             src={imageUrl}
@@ -72,9 +72,7 @@ export default function Index({ customers_count, customers }: { customers_count:
         return (
           <p
             className={`font-semibold
-              ${row.original.balance <= 500 ? "text-green-500" :
-                row.original.balance <= 999 ? "text-blue-500" :
-                  row.original.balance > 1000 ? "text-red-500" : ""}
+              ${getBalanceColor(row.original.balance)}
             `}
           >
             ₱ {Number(row.original.balance).toLocaleString("en-PH")}

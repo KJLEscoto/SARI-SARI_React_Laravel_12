@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import InputError from '@/components/input-error';
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { getBalanceColor } from '@/lib/utils';
 
 export default function Show({ customer }: { customer: Customer }) {
   const breadcrumbs: BreadcrumbItem[] = [
@@ -44,7 +45,6 @@ export default function Show({ customer }: { customer: Customer }) {
     });
   };
 
-
   const closeModal = () => {
     clearErrors();
     reset();
@@ -58,13 +58,6 @@ export default function Show({ customer }: { customer: Customer }) {
       toast.error(flash.error);
     }
   }, [flash]);
-
-  const getBalanceColor = (balance: number) => {
-    if (balance <= 150) return "text-green-500";
-    if (balance <= 999) return "text-blue-500";
-    if (balance >= 1000) return "text-red-500";
-    return "";
-  };
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -81,7 +74,7 @@ export default function Show({ customer }: { customer: Customer }) {
           </Link>
           <Link href={route("customers.edit", customer.id)}>
             <Button variant="default" size="sm">
-              Edit Account
+              Edit Customer
               <Edit3 className="w-4 h-4" />
             </Button>
           </Link>
@@ -146,14 +139,14 @@ export default function Show({ customer }: { customer: Customer }) {
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="add" id="r1" />
                               <Label htmlFor="r1" className='flex items-center gap-1 cursor-pointer'>
-                                Add
+                                Borrow
                                 <Plus className='w-4 h-4' />
                               </Label>
                             </div>
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="subtract" id="r2" />
                               <Label htmlFor="r2" className='flex items-center gap-1 cursor-pointer'>
-                                Subtract
+                                Pay
                                 <Minus className='w-4 h-4' />
                               </Label>
                             </div>
