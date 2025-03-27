@@ -66,6 +66,16 @@ export interface Customer {
     updated_at: string;
 }
 
+export interface Transaction {
+    id: number;
+    message: string;
+    type: string;
+    amount: number;
+    updated_balance: number;
+    created_at: string;
+    updated_at: string;
+}
+
 export interface Category {
     id: number;
     type: string;

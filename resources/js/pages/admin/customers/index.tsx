@@ -135,7 +135,10 @@ export default function Index({ customers_count, customers }: { customers_count:
       {customers.length ? (
         <div className="flex flex-col gap-4 p-4">
           <section className="flex justify-between gap-4">
-            <h1 className="text-2xl font-semibold relative w-fit">Customers <span className="absolute -right-5 top-0 text-sm">{customers_count}</span></h1>
+            <div className="text-2xl font-semibold flex items-start gap-1">
+              <p>Customers</p>
+              <span className="text-sm">{customers_count}</span>
+            </div>
           </section>
 
           <section className="flex justify-between">

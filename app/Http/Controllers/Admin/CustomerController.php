@@ -7,6 +7,7 @@ use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\Customer;
 use App\Models\Product;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
@@ -64,14 +65,19 @@ class CustomerController extends Controller
      */
     public function show(string $id)
     {
-        $customer = Customer::find($id);
+        $customer = Customer::with([
+            'transactions' => function ($query) {
+                $query->latest();
+            }
+        ])->withCount('transactions')->findOrFail($id);
 
-        if (!$customer) {
-            return redirect()->route('admin.customers.index')->with('error', 'Customer not found.');
-        }
-
-        return Inertia::render('admin/customers/show', compact('customer'));
+        return Inertia::render('admin/customers/show', [
+            'customer' => $customer,
+            'transactions' => $customer->transactions,
+            'transactionCount' => $customer->transactions_count, // This will return the total number of transactions
+        ]);
     }
+
 
     public function updateBalance(Request $request, string $id)
     {
@@ -88,8 +94,22 @@ class CustomerController extends Controller
         $amount = (float) $request->update_balance;
         if ($request->operator === 'add') {
             $customer->balance += $amount;
+            Transaction::create([
+                'customer_id' => $customer->id,
+                'message' => 'Borrowed an amount of:',
+                'amount' => $amount,
+                'type' => 'borrow',
+                'updated_balance' => $customer->balance,
+            ]);
         } else {
             $customer->balance -= $amount;
+            Transaction::create([
+                'customer_id' => $customer->id,
+                'message' => 'Paid an amount of:',
+                'amount' => $amount,
+                'type' => 'pay',
+                'updated_balance' => $customer->balance,
+            ]);
         }
 
         $customer->save();

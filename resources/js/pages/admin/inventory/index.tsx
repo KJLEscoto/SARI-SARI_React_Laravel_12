@@ -170,7 +170,10 @@ export default function Index({ products, inventory_count }: { products: Product
         {products.length ? (
           <>
             <section className="flex justify-between gap-4">
-              <h1 className="text-2xl font-semibold relative w-fit">Products <span className="absolute -right-5 top-0 text-sm">{inventory_count}</span></h1>
+              <div className="text-2xl font-semibold flex items-start gap-1">
+                <p>Products</p>
+                <span className="text-sm">{inventory_count}</span>
+              </div>
               <div className="flex gap-5">
                 <section className="flex items-center gap-2">
                   <div className="w-3 h-3 bg-red-200 dark:bg-red-950 border border-red-500 shadow"></div>
