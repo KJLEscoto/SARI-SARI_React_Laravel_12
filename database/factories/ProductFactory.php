@@ -26,7 +26,7 @@ class ProductFactory extends Factory
             'selling_price' => $this->faker->randomFloat(2, 10, 500),
             'market_price' => $this->faker->randomFloat(2, 10, 500),
             'expiration_date' => rand(0, 1) ? now()->addDays(rand(1, 365)) : null,
-            'image' => "http://picsum.photos/seed/{$randomSeed}/{$size}", // ✅ Generates a unique random image
+            'image' => '', // ✅ Generates a unique random image
             'created_at' => now(),
             'updated_at' => now(),
         ];

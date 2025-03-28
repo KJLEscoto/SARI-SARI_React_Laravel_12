@@ -86,7 +86,7 @@ export default function Show({ customer, transactions, transactionCount }: { cus
               />
             ) : (
               <div>
-                <div className="w-40 h-40 object-cover rounded-full flex items-center justify-center bg-black/70 dark:bg-[#404040] text-lg text-white">
+                <div className="w-40 h-40 object-cover rounded-full flex items-center justify-center bg-black/70 dark:bg-[#404040] text-6xl text-white">
                   {getInitials(customer.name)}
                 </div>
               </div>
@@ -214,38 +214,41 @@ export default function Show({ customer, transactions, transactionCount }: { cus
             </section>
 
             {/* Transaction History */}
-            <section className="flex flex-col gap-3">
-              <div className='font-semibold flex items-start gap-1'>
-                <p>Balance History</p>
-                <span className='text-xs'>{transactionCount > 0 ? transactionCount : null}</span>
-              </div>
-              <div className='*:p-5 *:text-gray-700 *:dark:text-gray-300 border *:hover:bg-gray-50 *:dark:hover:bg-black rounded-lg divide-y overflow-y-auto overflow-x-hidden h-60'>
-                {
-                  transactions.map(transaction => (
-                    <div key={transaction.id} className="flex justify-between items-start gap-2 py-2">
-                      <section className='flex items-start gap-1'>
-                        <div className='text-sm mt-0.5'>
-                          {
-                            transaction.type == 'borrow' ?
-                              <Plus className='w-4 h-4' /> :
-                              <Minus className='w-4 h-4' />
-                          }
-                        </div>
-                        <div>
-                          <p className='text-sm'>{transaction.message}</p>
-                          <p className='font-semibold'>{`₱${Number(transaction.amount).toLocaleString("en-PH")}`}</p>
-                        </div>
-                      </section>
+            {
+              transactions.length != 0 &&
+              <section className="flex flex-col gap-3">
+                <div className='font-semibold flex items-start gap-1'>
+                  <p>Balance History</p>
+                  <span className='text-xs'>{transactionCount > 0 ? transactionCount : null}</span>
+                </div>
+                <div className='*:p-5 *:text-gray-700 *:dark:text-gray-300 border *:hover:bg-gray-50 *:dark:hover:bg-black rounded-lg divide-y overflow-y-auto overflow-x-hidden h-60'>
+                  {
+                    transactions.map(transaction => (
+                      <div key={transaction.id} className="flex justify-between items-start gap-2 py-2">
+                        <section className='flex items-start gap-1'>
+                          <div className='text-sm mt-0.5'>
+                            {
+                              transaction.type == 'borrow' ?
+                                <Plus className='w-4 h-4' /> :
+                                <Minus className='w-4 h-4' />
+                            }
+                          </div>
+                          <div>
+                            <p className='text-sm'>{transaction.message}</p>
+                            <p className='font-semibold'>{`₱${Number(transaction.amount).toLocaleString("en-PH")}`}</p>
+                          </div>
+                        </section>
 
-                      <section className="font-medium text-xs text-end space-y-2">
-                        <h1 className='text-sm'>Updated Balance: {`₱${Number(transaction.updated_balance).toLocaleString("en-PH")}`}</h1>
-                        <p>{dayjs(transaction.created_at).format("MMM DD, YYYY")}</p>
-                      </section>
-                    </div>
-                  ))
-                }
-              </div>
-            </section>
+                        <section className="font-medium text-xs text-end space-y-2">
+                          <h1 className='text-sm'>Updated Balance: {`₱${Number(transaction.updated_balance).toLocaleString("en-PH")}`}</h1>
+                          <p>{dayjs(transaction.created_at).format("MMM DD, YYYY")}</p>
+                        </section>
+                      </div>
+                    ))
+                  }
+                </div>
+              </section>
+            }
 
             {/* More Details */}
             <section className="flex flex-col gap-3">

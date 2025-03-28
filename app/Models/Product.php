@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
@@ -21,4 +23,8 @@ class Product extends Model
         return (float) number_format($this->selling_price - $this->market_price, 2, '.', '');
     }
 
+    public function order_items(): HasMany
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 }

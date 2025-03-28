@@ -28,7 +28,7 @@ class DBBackup extends Command
     public function handle()
     {
         info(now());
-        $timestamp = now()->format("m-d-Y_H-i-s"); // Replace spaces with underscores
+        $timestamp = now()->format("M-d-Y_H-i-s"); // Replace spaces with underscores
         $path = Storage::path("backup/DB_{$timestamp}.gz");
 
         $db_username = env('DB_USERNAME');

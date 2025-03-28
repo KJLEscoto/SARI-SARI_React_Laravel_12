@@ -14,13 +14,13 @@ class Customer extends Model
     protected $guarded = [];
     protected $table = 'customers';
 
-    // public function orders() : HasMany
-    // {
-    //     // return $this->hasMany(Order::class);
-    // }
-
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function sales(): HasMany
+    {
+        return $this->hasMany(Sale::class);
     }
 }

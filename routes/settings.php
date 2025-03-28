@@ -24,11 +24,16 @@ Route::middleware('auth')->group(function () {
         return Inertia::render('settings/appearance');
     })->name('appearance');
 
-
     Route::get('admin/settings/system', function () {
-        $files = Storage::files('backup');
+        $files = collect(Storage::files('backup')) // Get all files
+            ->map(fn($file) => ['name' => $file, 'modified' => Storage::lastModified($file)]) // Get last modified timestamp
+            ->sortByDesc('modified') // Sort by latest first
+            ->pluck('name') // Keep only file names
+            ->toArray(); // Convert to array
+
         return Inertia::render('settings/system', compact('files'));
     })->name('system');
+
 
     Route::get('/backup/download/{file}', [BackupController::class, 'download'])->name('backup.download');
 

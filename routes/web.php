@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\InventoryController;
+use App\Http\Controllers\POSController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -14,9 +15,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dashboard');
     })->name('admin.dashboard');
 
+    Route::resource('admin/pos', POSController::class);
+
     Route::resource('admin/inventory', InventoryController::class);
     Route::resource('admin/customers', CustomerController::class);
     Route::patch('/admin/customers/{id}/update-balance', [CustomerController::class, 'updateBalance'])->name('update_balance');
+
 });
 
 require __DIR__ . '/settings.php';
