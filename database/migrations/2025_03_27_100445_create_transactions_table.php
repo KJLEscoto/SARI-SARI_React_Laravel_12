@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
             $table->text('message');
-            $table->enum('type', ['borrow', 'pay']);
+            $table->string('type');
             $table->decimal('amount', 10, 2);
             $table->decimal('updated_balance', 10, 2);
             $table->timestamps();

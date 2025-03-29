@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import dayjs from "dayjs";
 import { FormEventHandler, useRef } from 'react';
-import { ChevronLeft, Edit3, Minus, Plus } from "lucide-react";
+import { ChevronLeft, Edit3, Minus, Plus, Check } from "lucide-react";
 import { MoreDetails } from '@/components/more-details';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { getBalanceColor } from '@/lib/utils';
 import { useInitials } from '@/hooks/use-initials';
+import { Separator } from '@/components/ui/separator';
 
 export default function Show({ customer, transactions, transactionCount }: { customer: Customer; transactions: Transaction[]; transactionCount: number }) {
   const breadcrumbs: BreadcrumbItem[] = [
@@ -144,14 +145,14 @@ export default function Show({ customer, transactions, transactionCount }: { cus
                               <RadioGroupItem value="add" id="r1" />
                               <Label htmlFor="r1" className='flex items-center gap-1 cursor-pointer'>
                                 Borrow
-                                <Plus className='w-4 h-4' />
+                                <Plus className='w-4 h-4 text-red-500' />
                               </Label>
                             </div>
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="subtract" id="r2" />
                               <Label htmlFor="r2" className='flex items-center gap-1 cursor-pointer'>
                                 Pay
-                                <Minus className='w-4 h-4' />
+                                <Minus className='w-4 h-4 text-blue-500' />
                               </Label>
                             </div>
                           </RadioGroup>
@@ -218,30 +219,33 @@ export default function Show({ customer, transactions, transactionCount }: { cus
               transactions.length != 0 &&
               <section className="flex flex-col gap-3">
                 <div className='font-semibold flex items-start gap-1'>
-                  <p>Balance History</p>
+                  <p>Transaction History</p>
                   <span className='text-xs'>{transactionCount > 0 ? transactionCount : null}</span>
                 </div>
-                <div className='*:p-5 *:text-gray-700 *:dark:text-gray-300 border *:hover:bg-gray-50 *:dark:hover:bg-black rounded-lg divide-y overflow-y-auto overflow-x-hidden h-60'>
+                <div className='*:p-5 *:text-gray-700 *:dark:text-gray-300 border *:hover:bg-gray-50 *:dark:hover:bg-black rounded-lg divide-y overflow-y-auto overflow-x-hidden max-h-60'>
                   {
                     transactions.map(transaction => (
-                      <div key={transaction.id} className="flex justify-between items-start gap-2 py-2">
+                      <div key={transaction.id} className="flex md:flex-row flex-col w-full md:justify-between md:items-start md:gap-2 py-2 cursor-pointer">
                         <section className='flex items-start gap-1'>
                           <div className='text-sm mt-0.5'>
                             {
-                              transaction.type == 'borrow' ?
-                                <Plus className='w-4 h-4' /> :
-                                <Minus className='w-4 h-4' />
+                              transaction.type === 'borrow' || transaction.type === 'pending' ? (
+                                <Plus className="w-4 h-4 text-red-500" />
+                              ) : transaction.type === 'pay' ? (
+                                <Minus className="w-4 h-4 text-blue-500" />
+                              ) : transaction.type === 'paid' ? (
+                                <Check className="w-4 h-4 text-green-500" />
+                              ) : null
                             }
                           </div>
                           <div>
-                            <p className='text-sm'>{transaction.message}</p>
+                            <p className='text-sm truncate'>{transaction.message}</p>
                             <p className='font-semibold'>{`₱${Number(transaction.amount).toLocaleString("en-PH")}`}</p>
                           </div>
                         </section>
-
                         <section className="font-medium text-xs text-end space-y-2">
-                          <h1 className='text-sm'>Updated Balance: {`₱${Number(transaction.updated_balance).toLocaleString("en-PH")}`}</h1>
-                          <p>{dayjs(transaction.created_at).format("MMM DD, YYYY")}</p>
+                          <h1 className='text-sm text-black md:block hidden'><span className='text-gray-500'>Updated Balance:</span> {`₱${Number(transaction.updated_balance).toLocaleString("en-PH")}`}</h1>
+                          <p>@ {dayjs(transaction.created_at).format("MMM DD, YYYY")}</p>
                         </section>
                       </div>
                     ))

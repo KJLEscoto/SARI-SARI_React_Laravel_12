@@ -6,8 +6,10 @@ use App\Models\Customer;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Sale;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -19,9 +21,11 @@ class POSController extends Controller
      */
     public function index()
     {
-        $products = Product::latest()->get();
+        $products = Product::orderBy('name', 'asc')->get();
+        $cashier = Auth::user()->id;
+        $customers = Customer::orderBy('name', 'asc')->get();
 
-        return Inertia::render('admin/pos/index', compact('products'));
+        return Inertia::render('admin/pos/index', compact('products', 'cashier', 'customers'));
     }
 
     /**
@@ -37,7 +41,10 @@ class POSController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
+
         // Validate request
+
         $validated = $request->validate([
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
@@ -50,6 +57,12 @@ class POSController extends Controller
             'user_id' => 'required|exists:users,id',
         ]);
 
+        $customer = Customer::find($validated['customer_id']);
+        if (!$customer) {
+            Log::error('Invalid customer ID in purchase order: ' . $validated['customer_id']);
+            return Redirect::back()->with('error', 'Invalid customer ID.');
+        }
+
         // Create a new transaction
         $sale = Sale::create([
             'customer_id' => $validated['customer_id'],
@@ -58,6 +71,26 @@ class POSController extends Controller
             'status' => $validated['status'],
             'user_id' => $validated['user_id'],
         ]);
+
+        if ($validated['status'] == 'pending') {
+            $customer->balance += $validated['total_amount'];
+            Transaction::create([
+                'customer_id' => $customer->id,
+                'message' => 'Ordered a product (pay later):',
+                'amount' => $validated['total_amount'],
+                'type' => $validated['status'],
+                'updated_balance' => $customer->balance,
+            ]);
+            $customer->save();
+        } else {
+            Transaction::create([
+                'customer_id' => $customer->id,
+                'message' => 'Ordered a product (paid):',
+                'amount' => $validated['total_amount'],
+                'type' => $validated['status'],
+                'updated_balance' => $customer->balance,
+            ]);
+        }
 
         // Loop through items and save each to the database
         foreach ($validated['items'] as $item) {
@@ -72,13 +105,6 @@ class POSController extends Controller
             if ($product) {
                 $product->decrement('stock', $item['quantity']);
             }
-        }
-
-        // find customer and get name
-        $customer = Customer::find($validated['customer_id']);
-        if (!$customer) {
-            Log::error('Invalid customer ID in purchase order: ' . $validated['customer_id']);
-            return Redirect::back()->with('error', 'Invalid customer ID.');
         }
 
         return Redirect::back()->with('success', 'Order has been purchased by ' . $customer->name . '.');
