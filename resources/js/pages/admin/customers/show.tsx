@@ -6,16 +6,14 @@ import dayjs from "dayjs";
 import { FormEventHandler, useRef } from 'react';
 import { ChevronLeft, Edit3, Minus, Plus, Check, Settings2 } from "lucide-react";
 import { MoreDetails } from '@/components/more-details';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import InputError from '@/components/input-error';
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { getBalanceColor } from '@/lib/utils';
 import { useInitials } from '@/hooks/use-initials';
-import { Separator } from '@/components/ui/separator';
-import ShowBalance from '@/components/show-balance';
-import ShowOrder from '@/components/show-order';
+import TransactionDetails from '@/components/transaction-details';
 
 export default function Show({ customer, transactions, transactionCount, order_items }: { customer: Customer; transactions: Transaction[]; transactionCount: number; order_items: Product[] }) {
   const breadcrumbs: BreadcrumbItem[] = [
@@ -273,19 +271,7 @@ export default function Show({ customer, transactions, transactionCount, order_i
 
                         <DialogContent>
                           <DialogTitle>Transaction Details</DialogTitle>
-                          {
-                            transaction.type === 'pending' || transaction.type === 'paid' ? (
-                              <ShowOrder transaction={transaction} order_items={order_items} />
-                            ) : transaction.type === 'pay' || transaction.type === 'borrow' ? (
-                              <ShowBalance
-                                transaction={transaction}
-                              />
-                            ) : (
-                              <h1>
-                                Error Occured.
-                              </h1>
-                            )
-                          }
+                          <TransactionDetails transaction={transaction} order_items={order_items} />
                         </DialogContent>
                       </Dialog>
                     ))
