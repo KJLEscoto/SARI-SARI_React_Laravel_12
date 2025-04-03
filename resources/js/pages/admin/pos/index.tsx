@@ -178,10 +178,15 @@ export default function Index({ products, cashier, customers }: { products: Prod
             {selectedProducts.length > 0 ? (
               selectedProducts.map(({ product, quantity }) => (
                 <div key={product.id} className="grid grid-cols-3 py-2 px-3">
-                  <section className='flex flex-col justify-start'>
-                    <p className="text-sm font-semibold truncate">{product.name}</p>
-                    <p className="text-[12px]">₱{Number(product.selling_price).toLocaleString("en-PH")}</p>
-                  </section>
+                  <div className='flex items-startg gap-3'>
+                    <section>
+                      <img draggable="false" className="w-12 h-12 object-cover rounded-sm" src={product.image ? `/storage/${product.image}` : "/images/no_image.jpeg"} />
+                    </section>
+                    <section className='flex flex-col justify-start'>
+                      <p className="text-sm font-semibold truncate">{product.name}</p>
+                      <p className="text-[12px]">₱{Number(product.selling_price).toLocaleString("en-PH")}</p>
+                    </section>
+                  </div>
 
                   <section className='flex items-center justify-center'>
                     {/* quantity here */}

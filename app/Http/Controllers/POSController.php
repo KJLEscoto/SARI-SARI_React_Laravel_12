@@ -72,23 +72,27 @@ class POSController extends Controller
             'user_id' => $validated['user_id'],
         ]);
 
+        $old_balance = $customer->balance;
         if ($validated['status'] == 'pending') {
             $customer->balance += $validated['total_amount'];
             Transaction::create([
                 'customer_id' => $customer->id,
-                'message' => 'Ordered a product (pay later):',
+                'message' => 'Ordered a product (pay later)',
                 'amount' => $validated['total_amount'],
                 'type' => $validated['status'],
+                'old_balance' => $old_balance,
                 'updated_balance' => $customer->balance,
             ]);
             $customer->save();
         } else {
             Transaction::create([
                 'customer_id' => $customer->id,
-                'message' => 'Ordered a product (paid):',
+                'message' => 'Ordered a product (paid)',
                 'amount' => $validated['total_amount'],
                 'type' => $validated['status'],
+                'old_balance' => $old_balance,
                 'updated_balance' => $customer->balance,
+
             ]);
         }
 

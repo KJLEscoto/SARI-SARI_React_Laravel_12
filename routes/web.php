@@ -20,6 +20,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('admin/inventory', InventoryController::class);
     Route::resource('admin/customers', CustomerController::class);
     Route::patch('/admin/customers/{id}/update-balance', [CustomerController::class, 'updateBalance'])->name('update_balance');
+    Route::post('/admin/customers/{id}', [CustomerController::class, 'showOrderHistory'])->name('order-history');
 
 });
 

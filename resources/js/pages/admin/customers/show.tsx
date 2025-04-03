@@ -1,10 +1,10 @@
 import AppLayout from '@/layouts/app-layout';
-import { Customer, Transaction, type BreadcrumbItem } from '@/types';
+import { Customer, Product, Transaction, type BreadcrumbItem } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import dayjs from "dayjs";
 import { FormEventHandler, useRef } from 'react';
-import { ChevronLeft, Edit3, Minus, Plus, Check } from "lucide-react";
+import { ChevronLeft, Edit3, Minus, Plus, Check, Settings2 } from "lucide-react";
 import { MoreDetails } from '@/components/more-details';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -14,8 +14,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { getBalanceColor } from '@/lib/utils';
 import { useInitials } from '@/hooks/use-initials';
 import { Separator } from '@/components/ui/separator';
+import ShowBalance from '@/components/show-balance';
+import ShowOrder from '@/components/show-order';
 
-export default function Show({ customer, transactions, transactionCount }: { customer: Customer; transactions: Transaction[]; transactionCount: number }) {
+export default function Show({ customer, transactions, transactionCount, order_items }: { customer: Customer; transactions: Transaction[]; transactionCount: number; order_items: Product[] }) {
   const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Customers', href: '/admin/customers' },
     { title: customer.name, href: `/admin/customers/${customer.id}` },
@@ -30,7 +32,6 @@ export default function Show({ customer, transactions, transactionCount }: { cus
 
   const { errors } = usePage().props;
   const getInitials = useInitials();
-
 
   const updateBalanceForm: FormEventHandler = (e) => {
     e.preventDefault();
@@ -47,6 +48,27 @@ export default function Show({ customer, transactions, transactionCount }: { cus
         updateBalance.current?.focus();
       },
     });
+  };
+
+  const handleTransactionClick = (transaction: Transaction) => {
+
+    if (transaction.type === 'pending' || transaction.type === 'paid') {
+      // Prepare the data to send with the request
+      const requestData = {
+        amount: transaction.amount,
+        date: transaction.created_at,
+      };
+
+      // Send the request (you can use fetch, axios, or Inertia.js request)
+      router.post(route('order-history', { id: customer.id }), requestData, {
+        onSuccess: () => {
+          console.log('Request successful');
+        },
+        onError: (errors) => {
+          console.error('Error occurred:', errors);
+        },
+      });
+    }
   };
 
   const closeModal = () => {
@@ -94,7 +116,7 @@ export default function Show({ customer, transactions, transactionCount }: { cus
             )
           }
 
-          <div className='w-full divide-y *:p-5'>
+          <div className='w-full *:p-5'>
             <section className='flex justify-between gap-5'>
               <div className='space-y-1'>
                 <p className='text-2xl font-bold'>{customer.name}</p>
@@ -102,7 +124,7 @@ export default function Show({ customer, transactions, transactionCount }: { cus
             </section>
 
             {/* Outstanding Balance */}
-            <section className='flex justify-between items-center flex-wrap gap-3'>
+            <section className='flex justify-between items-center flex-wrap gap-3 border-y'>
               <div className='space-y-1'>
                 <p className=''>Outstanding Balance :
                   <span className={`font-semibold ml-1.5 ${getBalanceColor(customer.balance)}`}>
@@ -116,49 +138,46 @@ export default function Show({ customer, transactions, transactionCount }: { cus
                 <DialogTrigger asChild>
                   <Button variant='outline' size='default'>
                     Update Balance
-                    <Minus className="w-4 h-4" />
+                    <Settings2 className="w-4 h-4" />
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
-
+                  <DialogTitle>Update Balance</DialogTitle>
                   <form className="space-y-4" onSubmit={updateBalanceForm}>
-                    <DialogTitle>Update Balance</DialogTitle>
-                    <DialogDescription>
-                      <div className='space-y-3'>
-                        <section>
-                          Current Balance: <span className={`font-semibold ${getBalanceColor(customer.balance)}`}>
-                            ₱ {Number(customer.balance).toLocaleString("en-PH")}
-                          </span>
-                        </section>
+                    <div className='space-y-3 text-sm text-gray-500'>
+                      <section>
+                        Current Balance: <span className={`font-semibold ${getBalanceColor(customer.balance)}`}>
+                          ₱ {Number(customer.balance).toLocaleString("en-PH")}
+                        </span>
+                      </section>
 
-                        <section className='space-y-2'>
-                          <p>
-                            Select Operator:
-                          </p>
-                          <RadioGroup
-                            id='operator'
-                            className='flex gap-5 items-center'
-                            value={data.operator}
-                            onValueChange={(value) => setData('operator', value)} // Update state when value changes
-                          >
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="add" id="r1" />
-                              <Label htmlFor="r1" className='flex items-center gap-1 cursor-pointer'>
-                                Borrow
-                                <Plus className='w-4 h-4 text-red-500' />
-                              </Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="subtract" id="r2" />
-                              <Label htmlFor="r2" className='flex items-center gap-1 cursor-pointer'>
-                                Pay
-                                <Minus className='w-4 h-4 text-blue-500' />
-                              </Label>
-                            </div>
-                          </RadioGroup>
-                        </section>
-                      </div>
-                    </DialogDescription>
+                      <section className='space-y-2'>
+                        <p>
+                          Select Operator:
+                        </p>
+                        <RadioGroup
+                          id='operator'
+                          className='flex gap-5 items-center'
+                          value={data.operator}
+                          onValueChange={(value) => setData('operator', value)} // Update state when value changes
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="add" id="r1" />
+                            <Label htmlFor="r1" className='flex items-center gap-1 cursor-pointer'>
+                              Borrow
+                              <Plus className='w-4 h-4 text-red-500' />
+                            </Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="subtract" id="r2" />
+                            <Label htmlFor="r2" className='flex items-center gap-1 cursor-pointer'>
+                              Pay
+                              <Minus className='w-4 h-4 text-blue-500' />
+                            </Label>
+                          </div>
+                        </RadioGroup>
+                      </section>
+                    </div>
 
                     <div className="grid gap-2">
                       <section className='flex items-center gap-2'>
@@ -222,32 +241,53 @@ export default function Show({ customer, transactions, transactionCount }: { cus
                   <p>Transaction History</p>
                   <span className='text-xs'>{transactionCount > 0 ? transactionCount : null}</span>
                 </div>
-                <div className='*:p-5 *:text-gray-700 *:dark:text-gray-300 border *:hover:bg-gray-50 *:dark:hover:bg-black rounded-lg divide-y overflow-y-auto overflow-x-hidden max-h-60'>
+                <div className='*:p-5 *:text-gray-700 *:dark:text-gray-300 border *:hover:bg-gray-50 *:dark:hover:bg-black rounded-lg  overflow-y-auto overflow-x-hidden max-h-60'>
                   {
                     transactions.map(transaction => (
-                      <div key={transaction.id} className="flex md:flex-row flex-col w-full md:justify-between md:items-start md:gap-2 py-2 cursor-pointer">
-                        <section className='flex items-start gap-1'>
-                          <div className='text-sm mt-0.5'>
-                            {
-                              transaction.type === 'borrow' || transaction.type === 'pending' ? (
-                                <Plus className="w-4 h-4 text-red-500" />
-                              ) : transaction.type === 'pay' ? (
-                                <Minus className="w-4 h-4 text-blue-500" />
-                              ) : transaction.type === 'paid' ? (
-                                <Check className="w-4 h-4 text-green-500" />
-                              ) : null
-                            }
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <div key={transaction.id} className="flex md:flex-row flex-col w-full md:justify-between md:items-start md:gap-2 py-2 cursor-pointer" onClick={() => handleTransactionClick(transaction)} >
+                            <section className='flex items-start gap-1'>
+                              <div className='text-sm mt-0.5'>
+                                {
+                                  transaction.type === 'borrow' || transaction.type === 'pending' ? (
+                                    <Plus className="w-4 h-4 text-red-500" />
+                                  ) : transaction.type === 'pay' ? (
+                                    <Minus className="w-4 h-4 text-blue-500" />
+                                  ) : transaction.type === 'paid' ? (
+                                    <Check className="w-4 h-4 text-green-500" />
+                                  ) : null
+                                }
+                              </div>
+                              <div>
+                                <p className='text-sm truncate'>{transaction.message}</p>
+                                <p className='font-semibold'>{`₱${Number(transaction.amount).toLocaleString("en-PH")}`}</p>
+                              </div>
+                            </section>
+                            <section className="font-medium text-xs text-end space-y-2">
+                              <h1 className='text-sm text-black md:block hidden'><span className='text-gray-500'>Updated Balance:</span> {`₱${Number(transaction.updated_balance).toLocaleString("en-PH")}`}</h1>
+                              <p>@ {dayjs(transaction.created_at).format("MMM DD, YYYY")}</p>
+                            </section>
                           </div>
-                          <div>
-                            <p className='text-sm truncate'>{transaction.message}</p>
-                            <p className='font-semibold'>{`₱${Number(transaction.amount).toLocaleString("en-PH")}`}</p>
-                          </div>
-                        </section>
-                        <section className="font-medium text-xs text-end space-y-2">
-                          <h1 className='text-sm text-black md:block hidden'><span className='text-gray-500'>Updated Balance:</span> {`₱${Number(transaction.updated_balance).toLocaleString("en-PH")}`}</h1>
-                          <p>@ {dayjs(transaction.created_at).format("MMM DD, YYYY")}</p>
-                        </section>
-                      </div>
+                        </DialogTrigger>
+
+                        <DialogContent>
+                          <DialogTitle>Transaction Details</DialogTitle>
+                          {
+                            transaction.type === 'pending' || transaction.type === 'paid' ? (
+                              <ShowOrder transaction={transaction} order_items={order_items} />
+                            ) : transaction.type === 'pay' || transaction.type === 'borrow' ? (
+                              <ShowBalance
+                                transaction={transaction}
+                              />
+                            ) : (
+                              <h1>
+                                Error Occured.
+                              </h1>
+                            )
+                          }
+                        </DialogContent>
+                      </Dialog>
                     ))
                   }
                 </div>
@@ -257,7 +297,7 @@ export default function Show({ customer, transactions, transactionCount }: { cus
             {/* More Details */}
             <section className="flex flex-col gap-3">
               <h1 className='font-semibold'>More Details</h1>
-              <div className='*:p-5 *:text-gray-700 *:dark:text-gray-300 border *:hover:bg-gray-50 *:dark:hover:bg-black rounded-lg divide-y overflow-hidden'>
+              <div className='*:p-5 *:text-gray-700 *:dark:text-gray-300 border *:hover:bg-gray-50 *:dark:hover:bg-black rounded-lg overflow-hidden'>
                 <MoreDetails label="Customer ID" value={String(customer.id)} />
                 <MoreDetails label="Contact No." value={customer.phone} />
                 <MoreDetails label="Address" value={customer.address} />

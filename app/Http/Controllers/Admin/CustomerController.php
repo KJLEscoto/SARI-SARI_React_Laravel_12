@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\Customer;
+use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\Sale;
 use App\Models\Transaction;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
@@ -74,10 +77,41 @@ class CustomerController extends Controller
         return Inertia::render('admin/customers/show', [
             'customer' => $customer,
             'transactions' => $customer->transactions,
-            'transactionCount' => $customer->transactions_count, // This will return the total number of transactions
+            'transactionCount' => $customer->transactions_count,
         ]);
     }
 
+    public function showOrderHistory(Request $request, string $id)
+    {
+        $customer = Customer::with([
+            'transactions' => function ($query) {
+                $query->latest();
+            }
+        ])->withCount('transactions')->findOrFail($id);
+
+        $amount = $request->amount;
+        $date = Carbon::parse($request->date)->timezone('Asia/Manila')->toDateTimeString();
+
+        $customer_sale = Sale::where('customer_id', $id)
+            ->where('total_amount', $amount)
+            ->where('created_at', $date)
+            ->first();
+
+        if (!$customer_sale) {
+            return back()->withErrors(['message' => 'Sale not found for the given amount and date.']);
+        }
+
+        $sale_id = $customer_sale->id;
+
+        $order_items = OrderItem::with('product')->where('sale_id', $sale_id)->get();
+
+        return Inertia::render('admin/customers/show', [
+            'customer' => $customer,
+            'transactions' => $customer->transactions,
+            'transactionCount' => $customer->transactions_count,
+            'order_items' => $order_items,
+        ]);
+    }
 
     public function updateBalance(Request $request, string $id)
     {
@@ -92,22 +126,26 @@ class CustomerController extends Controller
 
         // Update balance
         $amount = (float) $request->update_balance;
+        $old_balance = $customer->balance;
+
         if ($request->operator === 'add') {
             $customer->balance += $amount;
             Transaction::create([
                 'customer_id' => $customer->id,
-                'message' => 'Borrowed an amount of:',
+                'message' => 'Borrowed an amount',
                 'amount' => $amount,
                 'type' => 'borrow',
+                'old_balance' => $old_balance,
                 'updated_balance' => $customer->balance,
             ]);
         } else {
             $customer->balance -= $amount;
             Transaction::create([
                 'customer_id' => $customer->id,
-                'message' => 'Paid an amount of:',
+                'message' => 'Paid an amount',
                 'amount' => $amount,
                 'type' => 'pay',
+                'old_balance' => $old_balance,
                 'updated_balance' => $customer->balance,
             ]);
         }

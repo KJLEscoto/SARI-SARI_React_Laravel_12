@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->text('message');
             $table->string('type');
             $table->decimal('amount', 10, 2);
+            $table->decimal('old_balance', 10, 2);
             $table->decimal('updated_balance', 10, 2);
             $table->timestamps();
         });

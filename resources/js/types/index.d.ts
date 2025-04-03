@@ -71,6 +71,7 @@ export interface Transaction {
     message: string;
     type: string;
     amount: number;
+    old_balance: number;
     updated_balance: number;
     created_at: string;
     updated_at: string;
