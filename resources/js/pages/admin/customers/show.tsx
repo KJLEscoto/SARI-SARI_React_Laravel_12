@@ -3,7 +3,7 @@ import { Customer, Product, Transaction, type BreadcrumbItem } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import dayjs from "dayjs";
-import { FormEventHandler, useRef } from 'react';
+import { FormEventHandler, useRef, useState } from 'react';
 import { ChevronLeft, Edit3, Minus, Plus, Check, Settings2 } from "lucide-react";
 import { MoreDetails } from '@/components/more-details';
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -23,24 +23,31 @@ export default function Show({ customer, transactions, transactionCount, order_i
 
   const updateBalance = useRef<HTMLInputElement>(null);
   const operatorButtons = useRef<HTMLInputElement>(null);
-  const { data, setData, reset, clearErrors, processing } = useForm<{ update_balance: number | string, operator: string }>({
+  const { data, setData, reset, clearErrors } = useForm<{ update_balance: number | string, operator: string }>({
     update_balance: '',
     operator: '',
   });
 
   const { errors } = usePage().props;
   const getInitials = useInitials();
+  const [isProcessing, setIsProcessing] = useState(false);
+
 
   const updateBalanceForm: FormEventHandler = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
+    setIsProcessing(true);
 
     router.patch(route('update_balance', customer.id), {
       update_balance: data.update_balance,
       operator: data.operator
     }, {
       preserveScroll: true,
-      onSuccess: () => closeModal(),
+      onSuccess: () => {
+        closeModal();
+        setIsProcessing(false);
+      },
       onError: (errors) => {
+        setIsProcessing(false);
         console.log("Validation Errors:", errors); // Debugging
         operatorButtons.current?.focus();
         updateBalance.current?.focus();
@@ -217,12 +224,12 @@ export default function Show({ customer, transactions, transactionCount, order_i
 
                     <DialogFooter className="gap-2">
                       <DialogClose asChild>
-                        <Button variant="secondary" onClick={closeModal}>
+                        <Button variant="outline" onClick={closeModal}>
                           Cancel
                         </Button>
                       </DialogClose>
 
-                      <Button type='submit' variant="default" disabled={processing}>
+                      <Button type='submit' variant="default" disabled={!data.update_balance || !data.operator || isProcessing}>
                         Update
                       </Button>
                     </DialogFooter>

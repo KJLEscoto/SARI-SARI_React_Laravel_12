@@ -29,7 +29,7 @@ export function HandleLogout() {
         </DialogDescription>
         <DialogFooter className="flex w-full justify-end gap-3">
           <DialogClose asChild>
-            <Button type="button" size="sm" variant="secondary">
+            <Button type="button" size="sm" variant="outline">
               Cancel
             </Button>
           </DialogClose>

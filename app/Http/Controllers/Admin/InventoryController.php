@@ -69,13 +69,16 @@ class InventoryController extends Controller
      */
     public function show(string $id)
     {
-
         $product = Product::find($id);
+        $profit = $product->profit();
+
         $product_sold = OrderItem::with('product')->where('product_id', $product->id)->count();
         $sum_product_sold = OrderItem::with('product')->where('product_id', $product->id)->sum('quantity');
-        $profit = $product->profit();
+
         $price_history = ProductPrice::with(['product', 'user'])->where('product_id', $product->id)->latest()->get();
         $price_history_count = ProductPrice::where('product_id', $product->id)->count();
+
+        // dd($product_sold);
 
         if (!$product) {
             return redirect()->route('admin.inventory.index')->with('error', 'Product not found.');

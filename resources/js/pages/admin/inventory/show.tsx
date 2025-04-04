@@ -7,6 +7,12 @@ import { ChevronLeft, Edit3, Trash2 } from "lucide-react";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { MoreDetails } from '@/components/more-details';
 import PriceHistory from '@/components/price-history';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 
 
 export default function Show({ product, profit, product_sold, sum_product_sold = 0, price_history, price_history_count }: { product: Product, profit: number, product_sold: number, sum_product_sold: number, price_history: any[], price_history_count: number }) {
@@ -59,7 +65,7 @@ export default function Show({ product, profit, product_sold, sum_product_sold =
               </DialogDescription>
               <DialogFooter className="flex w-full justify-end gap-3">
                 <DialogClose asChild>
-                  <Button type="button" size="sm" variant="secondary">
+                  <Button type="button" size="sm" variant="outline">
                     Cancel
                   </Button>
                 </DialogClose>
@@ -104,54 +110,79 @@ export default function Show({ product, profit, product_sold, sum_product_sold =
               </div>
             </section>
 
-            {
-              price_history.length > 0 &&
-              <section className="flex flex-col gap-3">
-                <div className='font-semibold flex items-start gap-1'>
-                  <p>Price History</p>
-                  <span className='text-xs'>{price_history_count > 0 ? price_history_count : null}</span>
-                </div>
-                <div className='*:p-5 *:text-gray-700 *:dark:text-gray-300 border *:hover:bg-gray-50 *:dark:hover:bg-accent rounded-lg  overflow-y-auto overflow-x-hidden max-h-60'>
-                  {
-                    price_history.map(price => (
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <div key={price.id} className="flex md:flex-row flex-col w-full md:justify-between md:items-start md:gap-2 py-2 cursor-pointer" >
-                            <section className='flex items-start gap-1'>
-                              <div>
-                                <p className='font-semibold text-lg'>{`₱${Number(price.new_selling_price).toLocaleString("en-PH")}`}</p>
-                                <p className='text-sm truncate line-through'>{`₱${Number(price.old_selling_price).toLocaleString("en-PH")}`} - Old Selling Price</p>
-                              </div>
-                            </section>
-                            <section className="font-medium text-xs text-end space-y-2">
-                              {/* <h1 className='text-sm text-black dark:text-white md:block hidden'><span className='text-gray-500'>Updated by:</span> {price.user.name}</h1> */}
-                              <p>@ {dayjs(price.created_at).format("MMM DD, YYYY")}</p>
-                            </section>
-                          </div>
-                        </DialogTrigger>
+            <Accordion type="single" collapsible className="w-full !px-0 !py-0">
+              <AccordionItem value="item-1" className='px-4'>
+                {
+                  price_history.length > 0 &&
+                  <section className="flex flex-col">
+                    <AccordionTrigger>
+                      <div className='font-semibold flex items-start gap-1'>
+                        <p>Price History</p>
+                        <span className='text-xs'>{price_history_count > 0 ? price_history_count : null}</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent>
 
-                        <DialogContent>
-                          <DialogTitle>Price Details</DialogTitle>
-                          <PriceHistory price={price} />
-                        </DialogContent>
-                      </Dialog>
-                    ))
-                  }
-                </div>
-              </section>
-            }
+                      <div className='*:p-5 *:text-gray-700 *:dark:text-gray-300 border *:hover:bg-gray-50 *:dark:hover:bg-accent rounded-lg  overflow-y-auto overflow-x-hidden max-h-60'>
+                        {
+                          price_history.map(price => (
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <div key={price.id} className="flex md:flex-row flex-col w-full md:justify-between md:items-start md:gap-2 py-2 cursor-pointer" >
+                                  <section className='flex items-start gap-1'>
+                                    <div>
+                                      <p className='font-semibold text-lg'>{`₱${Number(price.new_selling_price).toLocaleString("en-PH")}`}</p>
+                                      <p className='text-sm truncate line-through'>{`₱${Number(price.old_selling_price).toLocaleString("en-PH")}`} - Old Selling Price</p>
+                                    </div>
+                                  </section>
+                                  <section className="font-medium text-xs text-end space-y-2">
+                                    {/* <h1 className='text-sm text-black dark:text-white md:block hidden'><span className='text-gray-500'>Updated by:</span> {price.user.name}</h1> */}
+                                    <p>@ {dayjs(price.created_at).format("MMM DD, YYYY")}</p>
+                                  </section>
+                                </div>
+                              </DialogTrigger>
 
-            <section className="flex flex-col gap-3">
-              <h1 className='font-semibold'>More Details</h1>
-              <div className='*:p-5 *:text-gray-700 *:dark:text-gray-300 border *:hover:bg-gray-50 *:dark:hover:bg-black rounded-lg overflow-hidden'>
-                <MoreDetails label="Product ID" value={product.id} />
-                <MoreDetails label="Expiration Date" value={product.expiration_date
-                  ? dayjs(product.expiration_date).format("MMM DD, YYYY")
-                  : "N/A"} />
-                <MoreDetails label="Product Added" value={dayjs(product.created_at).format('MMM DD, YYYY | hh:mm a')} />
-                <MoreDetails label="Last Update" value={dayjs(product.updated_at).format('MMM DD, YYYY | hh:mm a')} />
-              </div>
-            </section>
+                              <DialogContent>
+                                <DialogTitle>Price Details</DialogTitle>
+                                <PriceHistory price={price} />
+                              </DialogContent>
+                            </Dialog>
+                          ))
+                        }
+                      </div>
+                    </AccordionContent>
+
+                  </section>
+                }
+
+              </AccordionItem>
+              <AccordionItem value="item-2" className='px-4'>
+                <AccordionTrigger>
+                  <div className='font-semibold flex items-start gap-1'>
+                    <p>Sold History</p>
+                    <span className='text-xs'>{product_sold > 0 ? product_sold : null}</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  TBD
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-3" className='px-4'>
+                <section className="flex flex-col">
+                  <AccordionTrigger><h1 className='font-semibold'>More Details</h1></AccordionTrigger>
+                  <AccordionContent>
+                    <div className='*:p-5 *:text-gray-700 *:dark:text-gray-300 border *:hover:bg-gray-50 *:dark:hover:bg-black rounded-lg overflow-hidden'>
+                      <MoreDetails label="Product ID" value={product.id} />
+                      <MoreDetails label="Expiration Date" value={product.expiration_date
+                        ? dayjs(product.expiration_date).format("MMM DD, YYYY")
+                        : "N/A"} />
+                      <MoreDetails label="Product Added" value={dayjs(product.created_at).format('MMM DD, YYYY | hh:mm a')} />
+                      <MoreDetails label="Last Update" value={dayjs(product.updated_at).format('MMM DD, YYYY | hh:mm a')} />
+                    </div>
+                  </AccordionContent>
+                </section>
+              </AccordionItem>
+            </Accordion>
           </div>
 
         </section>
