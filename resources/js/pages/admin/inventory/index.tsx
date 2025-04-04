@@ -9,7 +9,7 @@ import {
 } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, ChevronRight, Plus, Eye, Edit3, Trash2, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Eye, Edit3, Trash2, X, LucideInfo } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/tooltip"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import dayjs from "dayjs";
+import PosInfo from "@/components/pos-info";
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Inventory', href: '/admin/inventory' },
@@ -110,11 +111,10 @@ export default function Index({ products, inventory_count }: { products: Product
             </TooltipContent>
           </Tooltip>
 
-          <Tooltip>
+          {/* <Tooltip>
             <Dialog>
               <TooltipTrigger asChild>
                 <DialogTrigger>
-                  {/* <Button variant="destructive" size="sm" onClick={() => handleDelete(row.original.id)}> */}
                   <Button variant="destructive" size="sm">
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -141,7 +141,7 @@ export default function Index({ products, inventory_count }: { products: Product
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-          </Tooltip>
+          </Tooltip> */}
         </div>
       ),
     },
@@ -169,21 +169,20 @@ export default function Index({ products, inventory_count }: { products: Product
       <div className="flex flex-col gap-4 p-4">
         {products.length ? (
           <>
-            <section className="flex justify-between gap-4">
+            <section className="flex justify-between items-end gap-4">
               <div className="text-2xl font-semibold flex items-start gap-1">
                 <p>Products</p>
                 <span className="text-sm">{inventory_count}</span>
               </div>
-              <div className="flex gap-5">
-                <section className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-red-200 dark:bg-red-950 border border-red-500 shadow"></div>
-                  <p className="text-sm">Low Stock</p>
-                </section>
-                <section className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-yellow-200 dark:bg-yellow-950 border border-yellow-500 shadow"></div>
-                  <p className="text-sm">Expired</p>
-                </section>
-              </div>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <LucideInfo className="w-4 h-4 cursor-pointer hover:opacity-70" />
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogTitle>Product Information</DialogTitle>
+                  <PosInfo />
+                </DialogContent>
+              </Dialog>
             </section>
 
             <section className="flex justify-between">

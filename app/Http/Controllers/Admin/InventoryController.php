@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\ProductPrice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -68,13 +71,17 @@ class InventoryController extends Controller
     {
 
         $product = Product::find($id);
+        $product_sold = OrderItem::with('product')->where('product_id', $product->id)->count();
+        $sum_product_sold = OrderItem::with('product')->where('product_id', $product->id)->sum('quantity');
         $profit = $product->profit();
+        $price_history = ProductPrice::with(['product', 'user'])->where('product_id', $product->id)->latest()->get();
+        $price_history_count = ProductPrice::where('product_id', $product->id)->count();
 
         if (!$product) {
             return redirect()->route('admin.inventory.index')->with('error', 'Product not found.');
         }
 
-        return Inertia::render('admin/inventory/show', compact('product', 'profit'));
+        return Inertia::render('admin/inventory/show', compact('product', 'profit', 'product_sold', 'sum_product_sold', 'price_history', 'price_history_count'));
     }
 
 
@@ -111,10 +118,17 @@ class InventoryController extends Controller
             $path = $product->image; // Keep the old image
         }
 
-        // Update product details
+        ProductPrice::create([
+            'product_id' => $product->id,
+            'old_selling_price' => $product->selling_price,
+            'old_market_price' => $product->market_price,
+            'new_selling_price' => $validated['selling_price'],
+            'new_market_price' => $validated['market_price'],
+            'user_id' => Auth::user()->id,
+        ]);
+
         $product->update([
             'name' => $validated['name'],
-            // 'category' => $validated['category'],
             'stock' => $validated['stock'],
             'selling_price' => $validated['selling_price'],
             'market_price' => $validated['market_price'],

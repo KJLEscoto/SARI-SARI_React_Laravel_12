@@ -15,7 +15,7 @@ import { getBalanceColor } from '@/lib/utils';
 import { useInitials } from '@/hooks/use-initials';
 import TransactionDetails from '@/components/transaction-details';
 
-export default function Show({ customer, transactions, transactionCount, order_items }: { customer: Customer; transactions: Transaction[]; transactionCount: number; order_items: Product[] }) {
+export default function Show({ customer, transactions, transactionCount, order_items, payment_method }: { customer: Customer; transactions: Transaction[]; transactionCount: number; order_items: Product[]; payment_method: string }) {
   const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Customers', href: '/admin/customers' },
     { title: customer.name, href: `/admin/customers/${customer.id}` },
@@ -239,7 +239,7 @@ export default function Show({ customer, transactions, transactionCount, order_i
                   <p>Transaction History</p>
                   <span className='text-xs'>{transactionCount > 0 ? transactionCount : null}</span>
                 </div>
-                <div className='*:p-5 *:text-gray-700 *:dark:text-gray-300 border *:hover:bg-gray-50 *:dark:hover:bg-black rounded-lg  overflow-y-auto overflow-x-hidden max-h-60'>
+                <div className='*:p-5 *:text-gray-700 *:dark:text-gray-300 border *:hover:bg-gray-50 *:dark:hover:bg-accent rounded-lg  overflow-y-auto overflow-x-hidden max-h-60'>
                   {
                     transactions.map(transaction => (
                       <Dialog>
@@ -263,7 +263,7 @@ export default function Show({ customer, transactions, transactionCount, order_i
                               </div>
                             </section>
                             <section className="font-medium text-xs text-end space-y-2">
-                              <h1 className='text-sm text-black md:block hidden'><span className='text-gray-500'>Updated Balance:</span> {`₱${Number(transaction.updated_balance).toLocaleString("en-PH")}`}</h1>
+                              <h1 className='text-sm text-black dark:text-white md:block hidden'><span className='text-gray-500'>Updated Balance:</span> {`₱${Number(transaction.updated_balance).toLocaleString("en-PH")}`}</h1>
                               <p>@ {dayjs(transaction.created_at).format("MMM DD, YYYY")}</p>
                             </section>
                           </div>
@@ -271,7 +271,7 @@ export default function Show({ customer, transactions, transactionCount, order_i
 
                         <DialogContent>
                           <DialogTitle>Transaction Details</DialogTitle>
-                          <TransactionDetails transaction={transaction} order_items={order_items} />
+                          <TransactionDetails payment_method={payment_method} transaction={transaction} order_items={order_items} />
                         </DialogContent>
                       </Dialog>
                     ))

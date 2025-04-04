@@ -110,6 +110,7 @@ class CustomerController extends Controller
             'transactions' => $customer->transactions,
             'transactionCount' => $customer->transactions_count,
             'order_items' => $order_items,
+            'payment_method' => $customer_sale->payment_method
         ]);
     }
 

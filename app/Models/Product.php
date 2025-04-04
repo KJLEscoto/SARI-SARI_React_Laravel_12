@@ -27,4 +27,9 @@ class Product extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+
+    public function product_prices(): HasMany
+    {
+        return $this->hasMany(ProductPrice::class);
+    }
 }

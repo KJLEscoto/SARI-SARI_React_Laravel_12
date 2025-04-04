@@ -12,8 +12,8 @@ return new class extends Migration {
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
-            $table->string('image')->nullable();
             $table->string('name')->unique();
+            $table->string('image')->nullable();
             $table->string('phone')->nullable();
             $table->string('address')->nullable()->default('Davao City');
             $table->decimal('balance', 10, 2)->default(0);

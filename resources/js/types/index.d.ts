@@ -45,7 +45,7 @@ export interface Product {
     id: number;
     image?: string | null;
     name: string;
-    // category: string;
+    sold: number;
     stock: number;
     selling_price: number;
     market_price: number;
@@ -58,7 +58,6 @@ export interface Customer {
     id: number;
     image?: string | null;
     name: string;
-    // category: string;
     phone: string;
     address: string;
     balance: number;
@@ -77,9 +76,12 @@ export interface Transaction {
     updated_at: string;
 }
 
-export interface Category {
+export interface PriceHistory {
     id: number;
-    type: string;
+    old_selling_price: number;
+    old_market_price: number;
+    new_selling_price: number;
+    new_market_price: number;
     created_at: string;
     updated_at: string;
 }

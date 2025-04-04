@@ -4,7 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/app-layout';
 import { Customer, Product, type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { Minus, Plus, ChevronRight } from 'lucide-react';
+import { Minus, Plus, ChevronRight, LucideInfo } from 'lucide-react';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import {
   Select,
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from '@/components/ui/label';
+import PosInfo from '@/components/pos-info';
 
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -38,6 +39,7 @@ export default function Index({ products, cashier, customers }: { products: Prod
   const [selectedCustomer, setSelectedCustomer] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
   const [status, setStatus] = useState('');
+  const [processing, setProcessing] = useState(false);
 
 
   const handleProductClick = (product: Product) => {
@@ -59,7 +61,7 @@ export default function Index({ products, cashier, customers }: { products: Prod
 
   const handlePurchase: FormEventHandler = (e) => {
     // e.preventDefault();
-
+    setProcessing(true);
     router.post(route("pos.store"),
       {
         items: selectedProducts.map(({ product, quantity }) => ({
@@ -78,6 +80,7 @@ export default function Index({ products, cashier, customers }: { products: Prod
         preserveState: true,
         onSuccess: () => {
           setSelectedProducts([]);
+          setProcessing(false);
         },
       }
     );
@@ -105,9 +108,9 @@ export default function Index({ products, cashier, customers }: { products: Prod
               const lowStock = product.stock <= 5;
 
               let bgColor = "";
-              if (expired) bgColor = "!bg-yellow-100";
-              if (lowStock) bgColor = "!bg-red-100";
-              if (expired && lowStock) bgColor = "!bg-red-100";
+              if (expired) bgColor = "!bg-yellow-100 dark:!bg-yellow-700";
+              if (lowStock) bgColor = "!bg-red-100 dark:!bg-red-900";
+              if (expired && lowStock) bgColor = "!bg-red-100 dark:!bg-red-900";
 
               // Get the selected quantity for this product
               const selectedQuantity = selectedProducts.find((p) => p.product.id === product.id)?.quantity || 0;
@@ -146,29 +149,27 @@ export default function Index({ products, cashier, customers }: { products: Prod
         {/* Clicked Products Section */}
         <section className="w-full sticky h-[calc(100vh-6rem)] overflow-hidden top-2 shadow-md bg-white dark:bg-[#171717] border rounded-md p-4 col-span-2 flex flex-col gap-3">
           <div className="flex justify-between items-center">
-            <div className="space-y-2">
+            <section className="space-y-2">
               <h1 className="font-semibold">Orders</h1>
               <p>{selectedProducts.length} item(s)</p>
-            </div>
+            </section>
 
-            <div className='flex flex-col-reverse gap-2 justify-end items-end'>
-              <div className='flex gap-2'>
-                <section className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-red-200 dark:bg-red-950 border border-red-500 shadow"></div>
-                  <p className="text-sm">Low Stock</p>
-                </section>
-                <section className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-yellow-200 dark:bg-yellow-950 border border-yellow-500 shadow"></div>
-                  <p className="text-sm">Expired</p>
-                </section>
-              </div>
-
+            <section className='flex flex-col gap-2 justify-end items-end'>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <LucideInfo className="w-4 h-4 cursor-pointer hover:opacity-70" />
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogTitle>POS Information</DialogTitle>
+                  <PosInfo />
+                </DialogContent>
+              </Dialog>
               <div>
                 <Button disabled={selectedProducts.length === 0} size="sm" variant='outline' onClick={resetOrder}>
                   Reset All
                 </Button>
               </div>
-            </div>
+            </section>
           </div>
 
           <Separator />
@@ -177,25 +178,29 @@ export default function Index({ products, cashier, customers }: { products: Prod
           <div className="h-full overflow-auto divide-y">
             {selectedProducts.length > 0 ? (
               selectedProducts.map(({ product, quantity }) => (
-                <div key={product.id} className="grid grid-cols-3 py-2 px-3">
-                  <div className='flex items-startg gap-3'>
-                    <section>
-                      <img draggable="false" className="w-12 h-12 object-cover rounded-sm" src={product.image ? `/storage/${product.image}` : "/images/no_image.jpeg"} />
-                    </section>
-                    <section className='flex flex-col justify-start'>
+                <div key={product.id} className="grid grid-cols-5 py-2 px-3">
+                  <div className="flex items-start gap-3 w-full col-span-2">
+                    <div className="w-12 h-12 shrink-0">
+                      <img
+                        draggable="false"
+                        src={product.image ? `/storage/${product.image}` : "/images/no_image.jpeg"}
+                        alt={product.name || "Product Image"}
+                        className="w-full h-full object-cover rounded-sm"
+                      />
+                    </div>
+
+                    <section className="flex flex-col justify-start w-full overflow-hidden">
                       <p className="text-sm font-semibold truncate">{product.name}</p>
-                      <p className="text-[12px]">₱{Number(product.selling_price).toLocaleString("en-PH")}</p>
+                      <p className="text-xs text-nowrap">₱{Number(product.selling_price).toLocaleString("en-PH")}</p>
                     </section>
                   </div>
 
                   <section className='flex items-center justify-center'>
-                    {/* quantity here */}
                     <p className='text-sm'>x {quantity}</p>
                   </section>
 
-                  <section className='flex gap-3 justify-end items-center'>
+                  <section className='flex gap-3 justify-end items-center col-span-2'>
                     <Button onClick={() => updateQuantity(product.id, -1)} variant='default' className='bg-red-500 hover:bg-red-600'>
-                      {/* quantity - 1 */}
                       <Minus className='w-3 h-3' />
                     </Button>
                     <Button
@@ -210,7 +215,7 @@ export default function Index({ products, cashier, customers }: { products: Prod
                 </div>
               ))
             ) : (
-              <p className="text-center text-black/50">No products selected</p>
+              <p className="text-center text-black/50 dark:text-white/50">No products selected</p>
             )}
           </div>
 
@@ -223,7 +228,7 @@ export default function Index({ products, cashier, customers }: { products: Prod
 
             <Dialog>
               <DialogTrigger asChild>
-                <Button disabled={selectedProducts.length === 0} variant="default" size="default">
+                <Button disabled={selectedProducts.length === 0 || processing} variant="default" size="default">
                   Purchase
                   <ChevronRight className="w-4 h-4" />
                 </Button>
@@ -234,12 +239,12 @@ export default function Index({ products, cashier, customers }: { products: Prod
 
                   <section className='space-y-2'>
                     <DialogDescription>
-                      Select a customer below to confirm this order.
+                      Complete this form to confirm the order.
                     </DialogDescription>
 
-                    <Select onValueChange={(value) => setSelectedCustomer(value)}>
+                    <Select value={selectedCustomer} onValueChange={(value) => setSelectedCustomer(value)}>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="-" />
+                        <SelectValue placeholder="Select customer" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
@@ -313,22 +318,26 @@ export default function Index({ products, cashier, customers }: { products: Prod
                       <p className='text-sm'>{selectedProducts.length} item(s)</p>
                     </div>
                     {selectedProducts.length > 0 ? (
-                      <ul className="overflow-auto max-h-60 border-y py-1">
+                      <ul className="overflow-auto max-h-60 border-y">
                         {selectedProducts.map(({ product, quantity }) => (
-                          <li key={product.id} className="grid grid-cols-3 px-3 py-1 hover:bg-gray-100">
-                            <div className='w-full text-start'>
-                              <p className='truncate font-medium text-sm'>{product.name}</p>
-                              <p className='text-[12px]'>₱{product.selling_price.toLocaleString("en-PH")}</p>
+                          <li key={product.id} className='grid grid-cols-3 p-3 hover:bg-gray-100 dark:hover:bg-accent cursor-default'>
+                            <div className='flex items-start w-full gap-2'>
+                              <img draggable="false" className="w-10 h-10 object-cover rounded-sm" src={product.image ? `/storage/${product.image}` : "/images/no_image.jpeg"} />
+
+                              <section className='w-full text-start'>
+                                <p className='truncate font-medium text-sm'>{product.name}</p>
+                                <p className='text-[12px]'>₱{product.selling_price.toLocaleString("en-PH")}</p>
+                              </section>
                             </div>
-                            <div className='w-full text-center'>x {quantity}</div>
-                            <div className='w-full text-end text-nowrap'>₱{(Number(product.selling_price) * quantity).toLocaleString("en-PH")}</div>
+                            <div className='w-full text-center self-center'>x {quantity}</div>
+                            <div className='w-full text-end text-nowrap self-center'>₱{(Number(product.selling_price) * quantity).toLocaleString("en-PH")}</div>
                           </li>
                         ))}
                       </ul>
                     ) : (
-                      <p className="text-center text-gray-500 p-3">No products selected</p>
+                      <p className="text-center text-black/50 dark:text-white/50 p-3">No products selected</p>
                     )}
-                    <div className="flex justify-between font-semibold bg-black/80 text-white p-3">
+                    <div className="flex justify-between font-semibold bg-black/80 dark:bg-white/30 text-white p-3">
                       <span>Total:</span>
                       <span>₱{totalAmount.toLocaleString("en-PH")}</span>
                     </div>
@@ -336,12 +345,12 @@ export default function Index({ products, cashier, customers }: { products: Prod
 
                   <DialogFooter className="gap-2">
                     <DialogClose asChild>
-                      <Button variant="outline" onClick={cancelOrder}>
+                      <Button type='button' variant="outline" onClick={cancelOrder}>
                         Cancel
                       </Button>
                     </DialogClose>
 
-                    <Button variant="default" size="default" type='submit' disabled={!selectedCustomer || !paymentMethod || !status}>
+                    <Button variant="default" size="default" type='submit' disabled={!selectedCustomer || !paymentMethod || !status || processing}>
                       Confirm
                     </Button>
                   </DialogFooter>

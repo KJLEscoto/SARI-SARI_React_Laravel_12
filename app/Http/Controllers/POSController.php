@@ -98,16 +98,18 @@ class POSController extends Controller
 
         // Loop through items and save each to the database
         foreach ($validated['items'] as $item) {
-            OrderItem::create([
-                'sale_id' => $sale->id,
-                'product_id' => $item['product_id'],
-                'quantity' => $item['quantity'],
-                'sub_total' => $item['sub_total'],
-            ]);
-
             $product = Product::find($item['product_id']);
+
             if ($product) {
                 $product->decrement('stock', $item['quantity']);
+                OrderItem::create([
+                    'sale_id' => $sale->id,
+                    'product_id' => $product->id,
+                    'quantity' => $item['quantity'],
+                    'bought_selling_price' => $product->selling_price,
+                    'bought_market_price' => $product->market_price,
+                    'sub_total' => $item['sub_total'],
+                ]);
             }
         }
 
