@@ -110,7 +110,7 @@ export default function Index({ products, cashier, customers }: { products: Prod
               let bgColor = "";
               if (expired) bgColor = "!bg-yellow-200 dark:!bg-yellow-700";
               if (lowStock) bgColor = "!bg-red-300 dark:!bg-red-900";
-              if (expired && lowStock) bgColor = "!bg-red-100 dark:!bg-red-900";
+              if (expired && lowStock) bgColor = "!bg-red-300 dark:!bg-red-900";
 
               // Get the selected quantity for this product
               const selectedQuantity = selectedProducts.find((p) => p.product.id === product.id)?.quantity || 0;

@@ -57,6 +57,8 @@ export interface Product {
 export interface Customer {
     id: number;
     image?: string | null;
+    transactions_count?: number | null;
+    sales_count?: number | null;
     name: string;
     phone: string;
     address: string;

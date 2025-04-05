@@ -15,7 +15,7 @@ import { getBalanceColor } from '@/lib/utils';
 import { useInitials } from '@/hooks/use-initials';
 import TransactionDetails from '@/components/transaction-details';
 
-export default function Show({ customer, transactions, transactionCount, order_items, payment_method }: { customer: Customer; transactions: Transaction[]; transactionCount: number; order_items: Product[]; payment_method: string }) {
+export default function Show({ customer, transactions, order_items, payment_method }: { customer: Customer; transactions: Transaction[]; order_items: Product[]; payment_method: string }) {
   const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Customers', href: '/admin/customers' },
     { title: customer.name, href: `/admin/customers/${customer.id}` },
@@ -244,7 +244,11 @@ export default function Show({ customer, transactions, transactionCount, order_i
               <section className="flex flex-col gap-3">
                 <div className='font-semibold flex items-start gap-1'>
                   <p>Transaction History</p>
-                  <span className='text-xs'>{transactionCount > 0 ? transactionCount : null}</span>
+                  <span className='text-xs'>
+                    {customer && customer.transactions_count != null && customer.transactions_count > 0
+                      ? customer.transactions_count
+                      : null}
+                  </span>
                 </div>
                 <div className='*:p-5 *:text-gray-700 *:dark:text-gray-300 border *:hover:bg-gray-50 *:dark:hover:bg-accent rounded-lg  overflow-y-auto overflow-x-hidden max-h-60'>
                   {

@@ -176,7 +176,7 @@ export default function Index({ products, inventory_count }: { products: Product
               </div>
               <Dialog>
                 <DialogTrigger asChild>
-                  <LucideInfo className="w-4 h-4 cursor-pointer hover:opacity-70" />
+                  <LucideInfo className="w-6 h-6 cursor-pointer hover:opacity-70" />
                 </DialogTrigger>
                 <DialogContent>
                   <DialogTitle>Product Information</DialogTitle>

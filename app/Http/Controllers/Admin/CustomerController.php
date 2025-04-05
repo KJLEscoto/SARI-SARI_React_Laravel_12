@@ -12,6 +12,7 @@ use App\Models\Sale;
 use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -70,14 +71,13 @@ class CustomerController extends Controller
     {
         $customer = Customer::with([
             'transactions' => function ($query) {
-                $query->latest();
+                $query->latest()->with('user');
             }
-        ])->withCount('transactions')->findOrFail($id);
+        ])->withCount(['transactions', 'sales'])->findOrFail($id);
 
         return Inertia::render('admin/customers/show', [
             'customer' => $customer,
             'transactions' => $customer->transactions,
-            'transactionCount' => $customer->transactions_count,
         ]);
     }
 
@@ -85,9 +85,9 @@ class CustomerController extends Controller
     {
         $customer = Customer::with([
             'transactions' => function ($query) {
-                $query->latest();
-            }
-        ])->withCount('transactions')->findOrFail($id);
+                $query->latest()->with('user');
+            },
+        ])->withCount(['transactions', 'sales'])->findOrFail($id);
 
         $amount = $request->amount;
         $date = Carbon::parse($request->date)->timezone('Asia/Manila')->toDateTimeString();
@@ -108,7 +108,6 @@ class CustomerController extends Controller
         return Inertia::render('admin/customers/show', [
             'customer' => $customer,
             'transactions' => $customer->transactions,
-            'transactionCount' => $customer->transactions_count,
             'order_items' => $order_items,
             'payment_method' => $customer_sale->payment_method
         ]);
@@ -133,6 +132,7 @@ class CustomerController extends Controller
             $customer->balance += $amount;
             Transaction::create([
                 'customer_id' => $customer->id,
+                'user_id' => Auth::user()->id,
                 'message' => 'Borrowed an amount',
                 'amount' => $amount,
                 'type' => 'borrow',
@@ -143,6 +143,7 @@ class CustomerController extends Controller
             $customer->balance -= $amount;
             Transaction::create([
                 'customer_id' => $customer->id,
+                'user_id' => Auth::user()->id,
                 'message' => 'Paid an amount',
                 'amount' => $amount,
                 'type' => 'pay',

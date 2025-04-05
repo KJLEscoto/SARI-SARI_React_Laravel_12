@@ -77,6 +77,7 @@ class POSController extends Controller
             $customer->balance += $validated['total_amount'];
             Transaction::create([
                 'customer_id' => $customer->id,
+                'user_id' => Auth::user()->id,
                 'message' => 'Ordered a product (pay later)',
                 'amount' => $validated['total_amount'],
                 'type' => $validated['status'],
@@ -87,6 +88,7 @@ class POSController extends Controller
         } else {
             Transaction::create([
                 'customer_id' => $customer->id,
+                'user_id' => Auth::user()->id,
                 'message' => 'Ordered a product (paid)',
                 'amount' => $validated['total_amount'],
                 'type' => $validated['status'],

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Models\Customer;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductPrice;
@@ -70,21 +71,53 @@ class InventoryController extends Controller
     public function show(string $id)
     {
         $product = Product::find($id);
-        $profit = $product->profit();
-
-        $product_sold = OrderItem::with('product')->where('product_id', $product->id)->count();
-        $sum_product_sold = OrderItem::with('product')->where('product_id', $product->id)->sum('quantity');
-
-        $price_history = ProductPrice::with(['product', 'user'])->where('product_id', $product->id)->latest()->get();
-        $price_history_count = ProductPrice::where('product_id', $product->id)->count();
-
-        // dd($product_sold);
 
         if (!$product) {
             return redirect()->route('admin.inventory.index')->with('error', 'Product not found.');
         }
 
-        return Inertia::render('admin/inventory/show', compact('product', 'profit', 'product_sold', 'sum_product_sold', 'price_history', 'price_history_count'));
+        $profit = $product->profit();
+
+        $product_sold = OrderItem::where('product_id', $product->id)->count();
+        $sum_product_sold = OrderItem::where('product_id', $product->id)->sum('quantity');
+
+        $price_history = ProductPrice::with(['product', 'user'])
+            ->where('product_id', $product->id)
+            ->latest()
+            ->get();
+        $price_history_count = ProductPrice::where('product_id', $product->id)->count();
+
+        // Step 1: Get sale IDs where this product is sold
+        // $sale_ids = OrderItem::where('product_id', $product->id)->pluck('sale_id');
+
+        // Step 2: Get related customers who bought the product
+        // $customers = Customer::whereIn('id', function ($query) use ($sale_ids) {
+        //     $query->select('customer_id')
+        //         ->from('sales')
+        //         ->whereIn('id', $sale_ids);
+        // })->get();
+
+        // Optional: If you want to check the customer list
+        // dd($customers);
+
+        $related_sales = OrderItem::with([
+            'product',
+            'sale.customer'
+        ])
+            ->where('product_id', $product->id)
+            ->latest()
+            ->get();
+
+        return Inertia::render('admin/inventory/show', compact(
+            'product',
+            'profit',
+            'product_sold',
+            'sum_product_sold',
+            'price_history',
+            'price_history_count',
+            // 'customers'
+            'related_sales'
+        ));
     }
 
 
