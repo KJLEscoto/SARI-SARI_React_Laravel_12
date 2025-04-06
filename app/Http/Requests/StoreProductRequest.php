@@ -23,7 +23,7 @@ class StoreProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,avif|max:20480',
             'name' => 'required|string|max:255|unique:' . Product::class,
             // 'category' => 'required|string|max:255',
             'stock' => 'required|integer|min:0',

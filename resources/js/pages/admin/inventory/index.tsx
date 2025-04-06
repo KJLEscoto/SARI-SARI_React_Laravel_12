@@ -54,7 +54,7 @@ export default function Index({ products, inventory_count }: { products: Product
           <img
             src={imageUrl}
             alt={`${row.original.name} image`}
-            className="w-16 h-16 object-cover rounded-md"
+            className="w-16 h-16 object-cover rounded-md bg-white"
             onError={(e) => (e.currentTarget.src = "/images/no_image.jpeg")} // Handle broken images
           />
         );

@@ -17,6 +17,12 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from '@/components/ui/label';
 import PosInfo from '@/components/pos-info';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -107,30 +113,46 @@ export default function Index({ products, cashier, customers }: { products: Prod
               const expired = isExpired(product.expiration_date || 'N/A');
               const lowStock = product.stock <= 5;
 
-              let bgColor = "";
-              if (expired) bgColor = "!bg-yellow-200 dark:!bg-yellow-700";
-              if (lowStock) bgColor = "!bg-red-300 dark:!bg-red-900";
-              if (expired && lowStock) bgColor = "!bg-red-300 dark:!bg-red-900";
-
               // Get the selected quantity for this product
               const selectedQuantity = selectedProducts.find((p) => p.product.id === product.id)?.quantity || 0;
               const isOutOfStock = product.stock - selectedQuantity <= 0;
 
               return (
-                <div
-                  key={product.id}
-                  onClick={() => !isOutOfStock && handleProductClick(product)}
-                  className={`p-4 select-none border rounded-lg hover:shadow-md cursor-pointer dark:hover:border-white transition hover:border-black/50 bg-white dark:bg-[#171717] group ${bgColor} ${isOutOfStock ? "opacity-50 pointer-events-none" : ""}`}
-                >
-                  <div className="w-full h-40 overflow-hidden rounded-t-md border">
-                    <img draggable="false" className="w-full h-full object-cover group-hover:scale-105 transition" src={product.image ? `/storage/${product.image}` : "/images/no_image.jpeg"} />
-                  </div>
-                  <div className="flex items-center font-semibold justify-between gap-3 mt-2 text-black dark:text-white">
-                    <h2 className="text-lg w-1/2 truncate">{product.name}</h2>
-                    <p className="text-xs font-normal text-nowrap">Stock: {product.stock - selectedQuantity}</p>
-                  </div>
-                  <h1 className="text-black dark:text-white">₱{Number(product.selling_price).toLocaleString("en-PH")}</h1>
-                </div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <div
+                        key={product.id}
+                        onClick={() => !isOutOfStock && handleProductClick(product)}
+                        className={`p-4 select-none border h-fit rounded-lg hover:shadow-md cursor-pointer dark:hover:border-white transition hover:border-black/50 bg-white dark:bg-[#171717] group ${isOutOfStock ? "opacity-50 pointer-events-none" : ""}`}
+                      >
+                        <div className="w-full h-40 overflow-hidden rounded-t-md">
+                          <img draggable="false" className="w-full bg-white h-full object-cover group-hover:scale-105 transition" src={product.image ? `/storage/${product.image}` : "/images/no_image.jpeg"} />
+                        </div>
+                        <div className="flex items-center font-semibold justify-between gap-3 mt-2 text-black dark:text-white">
+                          <h2 className="text-lg w-1/2 truncate">{product.name}</h2>
+                          <p className="text-xs font-normal text-nowrap">Stock: {product.stock - selectedQuantity}</p>
+                        </div>
+                        <div className='flex justify-between gap-3 items-center'>
+                          <h1 className="text-black dark:text-white">₱{Number(product.selling_price).toLocaleString("en-PH")}</h1>
+                          <div className='flex gap-2 items-center'>
+                            {
+                              lowStock &&
+                              <div className="w-3 h-3 bg-red-200 dark:bg-red-950 border border-red-500 shadow"></div>
+                            }
+                            {
+                              expired &&
+                              <div className="w-3 h-3 bg-yellow-200 dark:bg-yellow-950 border border-yellow-500 shadow"></div>
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {product.name}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               );
             })
           ) : (

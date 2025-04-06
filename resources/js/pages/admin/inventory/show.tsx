@@ -78,7 +78,7 @@ export default function Show({ product, profit, product_sold, sum_product_sold =
         </section>
 
         <section className="flex md:flex-row flex-col md:items-start items-center gap-5">
-          <img src={product.image ? `/storage/${product.image}` : "/images/no_image.jpeg"} alt={`${product.name} image`} className="w-1/4 h-fit rounded-lg object-cover" onError={(e) => (e.currentTarget.src = "/images/no_image.jpeg")} />
+          <img src={product.image ? `/storage/${product.image}` : "/images/no_image.jpeg"} alt={`${product.name} image`} className="w-1/4 h-fit rounded-lg bg-white object-cover" onError={(e) => (e.currentTarget.src = "/images/no_image.jpeg")} />
 
           <div className='w-full *:p-5'>
             <section className='flex gap-3 md:flex-row flex-col w-full'>

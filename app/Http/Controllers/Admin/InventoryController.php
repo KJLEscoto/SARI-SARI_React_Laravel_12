@@ -154,14 +154,18 @@ class InventoryController extends Controller
             $path = $product->image; // Keep the old image
         }
 
-        ProductPrice::create([
-            'product_id' => $product->id,
-            'old_selling_price' => $product->selling_price,
-            'old_market_price' => $product->market_price,
-            'new_selling_price' => $validated['selling_price'],
-            'new_market_price' => $validated['market_price'],
-            'user_id' => Auth::user()->id,
-        ]);
+        if ($validated['selling_price'] != $product->selling_price || $validated['market_price'] != $product->market_price) {
+            if ($product->market_price != 0) {
+                ProductPrice::create([
+                    'product_id' => $product->id,
+                    'old_selling_price' => $product->selling_price,
+                    'old_market_price' => $product->market_price,
+                    'new_selling_price' => $validated['selling_price'],
+                    'new_market_price' => $validated['market_price'],
+                    'user_id' => Auth::user()->id,
+                ]);
+            }
+        }
 
         $product->update([
             'name' => $validated['name'],
