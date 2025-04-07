@@ -86,7 +86,7 @@ export default function Create() {
 
             <section className="space-y-1">
               <Label htmlFor="phone">Phone</Label>
-              <Input id="phone" type="text" value={data.phone} onChange={(e) => setData('phone', e.target.value)} required />
+              <Input id="phone" type="text" value={data.phone} onChange={(e) => setData('phone', e.target.value)} />
               <InputError message={errors.phone} />
             </section>
 

@@ -24,7 +24,7 @@ class StoreCustomerRequest extends FormRequest
         return [
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:20480',
             'name' => 'required|string|max:255|unique:' . Customer::class,
-            'phone' => 'required|string|regex:/^09\d{9}$/',
+            'phone' => 'nullable|string|regex:/^09\d{9}$/',
             'address' => 'nullable',
         ];
     }

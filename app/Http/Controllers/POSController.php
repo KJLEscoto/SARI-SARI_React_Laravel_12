@@ -29,14 +29,6 @@ class POSController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
@@ -52,7 +44,7 @@ class POSController extends Controller
             'items.*.sub_total' => 'required|numeric|min:0',
             'total_amount' => 'required|numeric|min:0',
             'payment_method' => 'required|string',
-            'status' => 'required|string|in:paid,pending',
+            'status' => 'required|string|in:pending,paid',
             'customer_id' => 'required|exists:customers,id',
             'user_id' => 'required|exists:users,id',
         ]);
@@ -78,9 +70,10 @@ class POSController extends Controller
             Transaction::create([
                 'customer_id' => $customer->id,
                 'user_id' => Auth::user()->id,
-                'message' => 'Ordered a product (pay later)',
+                'message' => 'Ordered a product',
                 'amount' => $validated['total_amount'],
-                'type' => $validated['status'],
+                'type' => 'order',
+                'status' => $validated['status'],
                 'old_balance' => $old_balance,
                 'updated_balance' => $customer->balance,
             ]);
@@ -89,9 +82,10 @@ class POSController extends Controller
             Transaction::create([
                 'customer_id' => $customer->id,
                 'user_id' => Auth::user()->id,
-                'message' => 'Ordered a product (paid)',
+                'message' => 'Ordered a product',
                 'amount' => $validated['total_amount'],
-                'type' => $validated['status'],
+                'type' => 'order',
+                'status' => $validated['status'],
                 'old_balance' => $old_balance,
                 'updated_balance' => $customer->balance,
 
@@ -116,37 +110,5 @@ class POSController extends Controller
         }
 
         return Redirect::back()->with('success', 'Order has been purchased by ' . $customer->name . '.');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

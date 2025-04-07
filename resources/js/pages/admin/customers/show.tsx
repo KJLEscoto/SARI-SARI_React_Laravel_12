@@ -37,7 +37,7 @@ export default function Show({ customer, transactions, order_items, payment_meth
     // e.preventDefault();
     setIsProcessing(true);
 
-    router.patch(route('update_balance', customer.id), {
+    router.patch(route('update_balance', { id: customer.id }), {
       update_balance: data.update_balance,
       operator: data.operator
     }, {
@@ -57,7 +57,7 @@ export default function Show({ customer, transactions, order_items, payment_meth
 
   const handleTransactionClick = (transaction: Transaction) => {
 
-    if (transaction.type === 'pending' || transaction.type === 'paid') {
+    if (transaction.type === 'order') {
       // Prepare the data to send with the request
       const requestData = {
         amount: transaction.amount,
@@ -259,12 +259,10 @@ export default function Show({ customer, transactions, order_items, payment_meth
                             <section className='flex items-start gap-1'>
                               <div className='text-sm mt-0.5'>
                                 {
-                                  transaction.type === 'borrow' || transaction.type === 'pending' ? (
-                                    <Plus className="w-4 h-4 text-red-500" />
-                                  ) : transaction.type === 'pay' ? (
-                                    <Minus className="w-4 h-4 text-blue-500" />
-                                  ) : transaction.type === 'paid' ? (
+                                  transaction.status === 'paid' ? (
                                     <Check className="w-4 h-4 text-green-500" />
+                                  ) : transaction.type === 'borrow' || transaction.status === 'pending' ? (
+                                    <Plus className="w-4 h-4 text-red-500" />
                                   ) : null
                                 }
                               </div>
@@ -296,7 +294,7 @@ export default function Show({ customer, transactions, order_items, payment_meth
               <h1 className='font-semibold'>More Details</h1>
               <div className='*:p-5 *:text-gray-700 *:dark:text-gray-300 border *:hover:bg-gray-50 *:dark:hover:bg-black rounded-lg overflow-hidden'>
                 <MoreDetails label="Customer ID" value={String(customer.id)} />
-                <MoreDetails label="Contact No." value={customer.phone} />
+                <MoreDetails label="Contact No." value={customer.phone ? customer.phone : 'N/A'} />
                 <MoreDetails label="Address" value={customer.address} />
                 <MoreDetails label="Date Joined" value={dayjs(customer.created_at).format('MMM DD, YYYY | hh:mm a')} />
                 <MoreDetails label="Last Update" value={dayjs(customer.updated_at).format('MMM DD, YYYY | hh:mm a')} />

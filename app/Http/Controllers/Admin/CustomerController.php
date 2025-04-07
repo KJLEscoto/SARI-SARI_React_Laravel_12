@@ -136,6 +136,7 @@ class CustomerController extends Controller
                 'message' => 'Borrowed an amount',
                 'amount' => $amount,
                 'type' => 'borrow',
+                'status' => 'pending',
                 'old_balance' => $old_balance,
                 'updated_balance' => $customer->balance,
             ]);
@@ -147,6 +148,7 @@ class CustomerController extends Controller
                 'message' => 'Paid an amount',
                 'amount' => $amount,
                 'type' => 'pay',
+                'status' => 'paid',
                 'old_balance' => $old_balance,
                 'updated_balance' => $customer->balance,
             ]);
@@ -155,6 +157,24 @@ class CustomerController extends Controller
         $customer->save();
 
         return back()->with('update', 'Balance has been updated.');
+    }
+
+    public function updateTransactionStatus(Request $request, string $id)
+    {
+
+        // dd($request->all());
+
+        $validate = $request->validate([
+            'status' => 'required|in:paid',
+        ]);
+
+        $customer_transaction = Transaction::where('id', $id)->first();
+
+        $customer_transaction->update([
+            'status' => $validate['status'],
+        ]);
+
+        return Redirect::back()->with('update', 'Transaction status has been updated.');
     }
 
     /**
@@ -200,12 +220,4 @@ class CustomerController extends Controller
 
         return Redirect::route('customers.show', $customer->id)->with('update', str($customer->name) . ' has been updated.');
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    // public function destroy(string $id)
-    // {
-    //     //
-    // }
 }

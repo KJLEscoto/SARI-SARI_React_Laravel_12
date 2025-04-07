@@ -116,7 +116,7 @@ export default function Index({ products, cashier, customers }: { products: Prod
         {/* Products List */}
         <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4 h-fit col-span-3 w-full">
           <div className='lg:col-span-3 md:col-span-2 col-span-1 sticky top-2 z-10 w-full'>
-            <Input className='bg-white shadow h-14 w-full' placeholder='Search a product' value={searchTerm}
+            <Input className='bg-white dark:bg-accent shadow-lg h-14 w-full border-black dark:border-white' placeholder='Search a product' value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)} />
             {searchTerm && (
               <X
@@ -239,7 +239,7 @@ export default function Index({ products, cashier, customers }: { products: Prod
                         draggable="false"
                         src={product.image ? `/storage/${product.image}` : "/images/no_image.jpeg"}
                         alt={product.name || "Product Image"}
-                        className="w-full h-full object-cover rounded-sm"
+                        className="w-full h-full object-cover rounded-sm bg-white"
                       />
                     </div>
 

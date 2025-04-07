@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Sale;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class SaleController extends Controller
 {
@@ -12,7 +13,8 @@ class SaleController extends Controller
      */
     public function index()
     {
-        //
+        $sales = Sale::with(['customer', 'user'])->get();
+        return Inertia::render('admin/sales/index', compact('sales'));
     }
 
     /**

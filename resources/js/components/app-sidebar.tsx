@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { LayoutGrid, Archive, CalendarDaysIcon, Users2, Logs } from 'lucide-react';
+import { LayoutGrid, Archive, CalendarDaysIcon, Users2, Logs, ArrowLeftRight, Percent } from 'lucide-react';
 import AppLogo from './app-logo';
 import { DateToday } from './date-today';
 
@@ -31,6 +31,19 @@ const managementNavItems: NavItem[] = [
         title: 'Customers',
         href: '/admin/customers',
         icon: Users2,
+    },
+];
+
+const reportsNavItems: NavItem[] = [
+    {
+        title: 'Sales',
+        href: '/admin/sales',
+        icon: Percent,
+    },
+    {
+        title: 'Transactions',
+        href: '/admin/transactions',
+        icon: ArrowLeftRight,
     },
 ];
 
@@ -65,6 +78,7 @@ export function AppSidebar() {
             <SidebarContent>
                 <NavMain groupLabel='Main' items={mainNavItems} />
                 <NavMain groupLabel='Management' items={managementNavItems} />
+                <NavMain groupLabel='Reports' items={reportsNavItems} />
             </SidebarContent>
 
             <SidebarFooter>

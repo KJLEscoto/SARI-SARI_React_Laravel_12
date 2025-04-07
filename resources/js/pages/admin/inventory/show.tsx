@@ -13,6 +13,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { useInitials } from '@/hooks/use-initials';
 
 
 export default function Show({ product, profit, product_sold, sum_product_sold = 0, price_history, price_history_count, related_sales }: { product: Product, profit: number, product_sold: number, sum_product_sold: number, price_history: any[], price_history_count: number, related_sales: any[] }) {
@@ -26,6 +27,8 @@ export default function Show({ product, profit, product_sold, sum_product_sold =
       href: `/admin/inventory/${product.id}`,
     },
   ];
+
+  const getInitials = useInitials();
 
 
   const handleDelete = (id: number) => {
@@ -180,7 +183,16 @@ export default function Show({ product, profit, product_sold, sum_product_sold =
 
                               <section className="font-medium text-xs text-end space-y-2">
                                 <div className='flex flex-col items-end gap-2'>
-                                  <img src={item.sale.customer.image ? `/storage/${item.sale.customer.image}` : "/images/no_user.jpg"} alt={`${item.sale.customer.name} image`} className="w-10 h-10 rounded-full object-cover" onError={(e) => (e.currentTarget.src = "/images/no_user.jpg")} />
+                                  {
+                                    item.sale.customer.image ?
+                                      <img src={item.sale.customer.image ? `/storage/${item.sale.customer.image}` : "/images/no_user.jpg"} alt={`${item.sale.customer.name} image`} className="w-10 h-10 rounded-full object-cover" onError={(e) => (e.currentTarget.src = "/images/no_user.jpg")} />
+                                      :
+                                      <div>
+                                        <div className="w-10 h-10 object-cover rounded-full flex items-center justify-center bg-black/70 dark:bg-[#404040] text-sm text-white">
+                                          {getInitials(item.sale.customer.name)}
+                                        </div>
+                                      </div>
+                                  }
                                   <h1 className='text-sm text-black dark:text-white'>
                                     <span className='text-gray-500 mr-1'>Purchased by</span>
                                     <Link href={route('customers.show', item.sale.customer.id)} className='hover:underline'>{item.sale.customer.name}</Link>
