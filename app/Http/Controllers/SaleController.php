@@ -13,7 +13,7 @@ class SaleController extends Controller
      */
     public function index()
     {
-        $sales = Sale::with(['customer', 'user'])->get();
+        $sales = Sale::with(['customer', 'user'])->where('status', 'paid')->get();
         return Inertia::render('admin/sales/index', compact('sales'));
     }
 

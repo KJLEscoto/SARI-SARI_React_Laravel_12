@@ -170,7 +170,23 @@ class CustomerController extends Controller
 
         $customer_transaction = Transaction::where('id', $id)->first();
 
+        $amount = $customer_transaction->amount;
+        $date = Carbon::parse($customer_transaction->created_at)->timezone('Asia/Manila')->toDateTimeString();
+        $customer_id = $customer_transaction->customer_id;
+
+        $customer_sale = Sale::where('customer_id', $customer_id)
+            ->where('total_amount', $amount)
+            ->where('created_at', $date)
+            ->first();
+
+        // dd($customer_sale);
+
+
         $customer_transaction->update([
+            'status' => $validate['status'],
+        ]);
+
+        $customer_sale->update([
             'status' => $validate['status'],
         ]);
 
