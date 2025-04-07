@@ -4,7 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/app-layout';
 import { Customer, Product, type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { Minus, Plus, ChevronRight, LucideInfo } from 'lucide-react';
+import { Minus, Plus, ChevronRight, LucideInfo, X } from 'lucide-react';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import {
   Select,
@@ -23,6 +23,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { Input } from '@/components/ui/input';
 
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -46,6 +47,7 @@ export default function Index({ products, cashier, customers }: { products: Prod
   const [paymentMethod, setPaymentMethod] = useState('');
   const [status, setStatus] = useState('');
   const [processing, setProcessing] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
 
   const handleProductClick = (product: Product) => {
@@ -64,6 +66,11 @@ export default function Index({ products, cashier, customers }: { products: Prod
         .filter((p) => p.quantity > 0)
     );
   };
+
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
 
   const handlePurchase: FormEventHandler = (e) => {
     // e.preventDefault();
@@ -105,15 +112,25 @@ export default function Index({ products, cashier, customers }: { products: Prod
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="POS" />
-      <div className="grid grid-cols-5 gap-4 rounded-xl p-4">
+      <div className="grid grid-cols-5 gap-4 rounded-xl p-4 h-full w-full">
         {/* Products List */}
-        <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4 w-full col-span-3">
-          {products.length > 0 ? (
-            products.map((product) => {
+        <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4 h-fit col-span-3 w-full">
+          <div className='lg:col-span-3 md:col-span-2 col-span-1 sticky top-2 z-10 w-full'>
+            <Input className='bg-white shadow h-14 w-full' placeholder='Search a product' value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)} />
+            {searchTerm && (
+              <X
+                className="absolute right-3 top-5 text-gray-500 cursor-pointer hover:text-gray-700"
+                onClick={() => setSearchTerm("")}
+                size={20}
+              />
+            )}
+          </div>
+          {filteredProducts.length > 0 ? (
+            filteredProducts.map((product) => {
               const expired = isExpired(product.expiration_date || 'N/A');
               const lowStock = product.stock <= 5;
 
-              // Get the selected quantity for this product
               const selectedQuantity = selectedProducts.find((p) => p.product.id === product.id)?.quantity || 0;
               const isOutOfStock = product.stock - selectedQuantity <= 0;
 
@@ -156,7 +173,7 @@ export default function Index({ products, cashier, customers }: { products: Prod
               );
             })
           ) : (
-            <div className="w-full h-40 items-center flex flex-col gap-3 justify-center">
+            <div className="w-full h-40 items-center flex flex-col gap-3 justify-center col-span-3">
               <p className="text-center md:text-2xl text-lg">No products available</p>
               <Link href={route("inventory.create")}>
                 <Button variant="default" size="default">
@@ -170,24 +187,39 @@ export default function Index({ products, cashier, customers }: { products: Prod
 
         {/* Clicked Products Section */}
         <section className="w-full sticky h-[calc(100vh-6rem)] overflow-hidden top-2 shadow-md bg-white dark:bg-[#171717] border rounded-md p-4 col-span-2 flex flex-col gap-3">
-          <div className="flex justify-between items-center">
-            <section className="space-y-2">
-              <h1 className="font-semibold">Orders</h1>
-              <p>{selectedProducts.length} item(s)</p>
+          <div className="flex flex-wrap justify-between gap-2 items-center w-full">
+            <section className="space-y-1 w-full lg:w-auto">
+              <div className='flex justify-between items-center'>
+                <h1 className="font-semibold">Orders</h1>
+                <span className='block lg:hidden'>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <LucideInfo className="w-4 h-4 cursor-pointer hover:opacity-70" />
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogTitle>POS Information</DialogTitle>
+                      <PosInfo />
+                    </DialogContent>
+                  </Dialog>
+                </span>
+              </div>
+              <p className='lg:text-base text-sm'>{selectedProducts.length} item(s)</p>
             </section>
 
-            <section className='flex flex-col gap-2 justify-end items-end'>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <LucideInfo className="w-4 h-4 cursor-pointer hover:opacity-70" />
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogTitle>POS Information</DialogTitle>
-                  <PosInfo />
-                </DialogContent>
-              </Dialog>
-              <div>
-                <Button disabled={selectedProducts.length === 0} size="sm" variant='outline' onClick={resetOrder}>
+            <section className='flex flex-col gap-2 justify-end items-end lg:w-auto w-full'>
+              <span className='lg:block hidden'>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <LucideInfo className="w-4 h-4 cursor-pointer hover:opacity-70" />
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogTitle>POS Information</DialogTitle>
+                    <PosInfo />
+                  </DialogContent>
+                </Dialog>
+              </span>
+              <div className='lg:w-auto w-full'>
+                <Button disabled={selectedProducts.length === 0} size="sm" variant='outline' className='w-full' onClick={resetOrder}>
                   Reset All
                 </Button>
               </div>
@@ -200,8 +232,8 @@ export default function Index({ products, cashier, customers }: { products: Prod
           <div className="h-full overflow-auto divide-y">
             {selectedProducts.length > 0 ? (
               selectedProducts.map(({ product, quantity }) => (
-                <div key={product.id} className="grid grid-cols-5 py-2 px-3">
-                  <div className="flex items-start gap-3 w-full col-span-2">
+                <div key={product.id} className="lg:grid lg:grid-cols-5 py-2 flex flex-col gap-1 lg:px-3 px-1">
+                  <div className="flex lg:flex-nowrap flex-wrap items-start lg:gap-3 gap-1 justify-center lg:justify-start w-full col-span-2">
                     <div className="w-12 h-12 shrink-0">
                       <img
                         draggable="false"
@@ -217,11 +249,11 @@ export default function Index({ products, cashier, customers }: { products: Prod
                     </section>
                   </div>
 
-                  <section className='flex items-center justify-center'>
+                  <section className='flex items-center lg:justify-end md:justify-start justify-center'>
                     <p className='text-sm'>x {quantity}</p>
                   </section>
 
-                  <section className='flex gap-3 justify-end items-center col-span-2'>
+                  <section className='flex lg:gap-3 gap-2 lg:justify-end justify-center items-center col-span-2'>
                     <Button onClick={() => updateQuantity(product.id, -1)} variant='default' className='bg-red-500 hover:bg-red-600'>
                       <Minus className='w-3 h-3' />
                     </Button>
@@ -237,20 +269,20 @@ export default function Index({ products, cashier, customers }: { products: Prod
                 </div>
               ))
             ) : (
-              <p className="text-center text-black/50 dark:text-white/50">No products selected</p>
+              <p className="text-center text-black/50 dark:text-white/50 lg:text-base text-sm">No products selected</p>
             )}
           </div>
 
           <Separator />
 
-          <div className='flex items-center justify-between gap-3'>
-            <h1 className="font-semibold">
+          <div className='flex items-center flex-wrap justify-between gap-2'>
+            <h1 className="font-semibold lg:text-base text-sm">
               Total: ₱{totalAmount.toLocaleString("en-PH")}
             </h1>
 
             <Dialog>
               <DialogTrigger asChild>
-                <Button disabled={selectedProducts.length === 0 || processing} variant="default" size="default">
+                <Button disabled={selectedProducts.length === 0 || processing} variant="default" size="sm">
                   Purchase
                   <ChevronRight className="w-4 h-4" />
                 </Button>
@@ -372,8 +404,8 @@ export default function Index({ products, cashier, customers }: { products: Prod
                       </Button>
                     </DialogClose>
 
-                    <Button variant="default" size="default" type='submit' disabled={!selectedCustomer || !paymentMethod || !status || processing}>
-                      Confirm
+                    <Button type="submit" variant="default" size="default" disabled={processing || !selectedCustomer || !paymentMethod || !status}>
+                      {processing ? 'Processing...' : 'Confirm'}
                     </Button>
                   </DialogFooter>
                 </form>
