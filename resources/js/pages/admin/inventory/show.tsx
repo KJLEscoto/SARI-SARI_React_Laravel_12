@@ -178,7 +178,7 @@ export default function Show({ product, profit, product_sold, sum_product_sold =
                                   ).toLocaleString("en-PH")}`}</p>
                                   <p className='text-sm truncate'>{`₱${Number(item.bought_selling_price).toLocaleString("en-PH")}`} x {item.quantity} {item.quantity <= 1 ? 'pc' : 'pcs'}</p>
                                 </div>
-                                <p className='text-sm font-medium'>{item.sale.payment_method}</p>
+                                <p className='text-sm font-medium'>{item.sale.payment_method} | {item.sale.status}</p>
                               </section>
 
                               <section className="font-medium text-xs text-end space-y-2">

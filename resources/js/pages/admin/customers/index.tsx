@@ -9,7 +9,7 @@ import {
 } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, ChevronRight, Plus, Eye, Edit3, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Eye, Edit3, X, LucideInfo } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -18,6 +18,9 @@ import {
 } from "@/components/ui/tooltip"
 import { getBalanceColor } from "@/lib/utils";
 import { useInitials } from "@/hooks/use-initials";
+import BalanceInfo from "@/components/balance-info";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Customers', href: '/admin/customers' },
@@ -134,11 +137,27 @@ export default function Index({ customers_count, customers }: { customers_count:
       <Head title="Customers" />
       {customers.length ? (
         <div className="flex flex-col gap-4 p-4">
-          <section className="flex justify-between gap-4">
+          {/* <section className="flex justify-between gap-4">
             <div className="text-2xl font-semibold flex items-start gap-1">
               <p>Customers</p>
               <span className="text-sm">{customers_count}</span>
             </div>
+          </section> */}
+
+          <section className="flex justify-between items-end gap-4">
+            <div className="text-2xl font-semibold flex items-start gap-1">
+              <p>Customers</p>
+              <span className="text-sm">{customers_count}</span>
+            </div>
+            <Dialog>
+              <DialogTrigger asChild>
+                <LucideInfo className="w-6 h-6 cursor-pointer hover:opacity-70" />
+              </DialogTrigger>
+              <DialogContent>
+                <DialogTitle>Balance Information</DialogTitle>
+                <BalanceInfo />
+              </DialogContent>
+            </Dialog>
           </section>
 
           <section className="flex justify-between">

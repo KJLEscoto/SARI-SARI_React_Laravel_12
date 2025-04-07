@@ -80,7 +80,7 @@ export default function TransactionDetails({ transaction, order_items, payment_m
         <Checkbox
           id="paid"
           name="paid"
-          className="cursor-pointer"
+          className="cursor-pointer border-2"
           disabled={data.status === 'paid' || processing}
           checked={data.status === 'paid'}
           onCheckedChange={handleCheckboxChange}
