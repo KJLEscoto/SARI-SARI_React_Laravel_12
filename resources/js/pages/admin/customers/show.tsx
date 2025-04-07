@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import dayjs from "dayjs";
 import { FormEventHandler, useRef, useState } from 'react';
-import { ChevronLeft, Edit3, Minus, Plus, Check, Settings2 } from "lucide-react";
+import { ChevronLeft, Edit3, Minus, Plus, Check, Settings2, LucideInfo } from "lucide-react";
 import { MoreDetails } from '@/components/more-details';
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { getBalanceColor } from '@/lib/utils';
 import { useInitials } from '@/hooks/use-initials';
 import TransactionDetails from '@/components/transaction-details';
+import BalanceInfo from '@/components/balance-info';
 
 export default function Show({ customer, transactions, order_items, payment_method }: { customer: Customer; transactions: Transaction[]; order_items: Product[]; payment_method: string }) {
   const breadcrumbs: BreadcrumbItem[] = [
@@ -131,11 +132,21 @@ export default function Show({ customer, transactions, order_items, payment_meth
             {/* Outstanding Balance */}
             <section className='flex justify-between items-center flex-wrap gap-3 border-y'>
               <div className='space-y-1'>
-                <p className=''>Outstanding Balance :
-                  <span className={`font-semibold ml-1.5 ${getBalanceColor(customer.balance)}`}>
-                    ₱ {Number(customer.balance).toLocaleString("en-PH")}
+                <div className='flex items-center gap-2'>
+                  Outstanding Balance :
+                  <span className={`font-semibold -ml-1 ${getBalanceColor(customer.balance)}`}>
+                    ₱{Number(customer.balance).toLocaleString("en-PH")}
                   </span>
-                </p>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <LucideInfo className="w-4 h-4 cursor-pointer hover:opacity-70 opacity-90" />
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogTitle>Balance Information</DialogTitle>
+                      <BalanceInfo />
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </div>
 
               {/* Update Balance Dialog */}

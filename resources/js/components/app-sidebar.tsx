@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { LayoutGrid, Archive, CalendarDaysIcon, Users2, Logs, ArrowLeftRight, Percent } from 'lucide-react';
+import { LayoutGrid, Archive, CalendarDaysIcon, Users2, Logs, ArrowLeftRight, Percent, FileDown } from 'lucide-react';
 import AppLogo from './app-logo';
 import { DateToday } from './date-today';
 
@@ -44,6 +44,11 @@ const reportsNavItems: NavItem[] = [
         title: 'Transactions',
         href: '/admin/transactions',
         icon: ArrowLeftRight,
+    },
+    {
+        title: 'Downloadables',
+        href: '/admin/downloadables',
+        icon: FileDown,
     },
 ];
 
