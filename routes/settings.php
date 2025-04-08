@@ -3,7 +3,10 @@
 use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
+use Illuminate\Console\View\Components\Info;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -34,7 +37,11 @@ Route::middleware('auth')->group(function () {
         return Inertia::render('settings/system', compact('files'));
     })->name('system');
 
-
     Route::get('/backup/download/{file}', [BackupController::class, 'download'])->name('backup.download');
 
+    Route::post('/backup/run', function () {
+        info("Running backup from web...");
+        Artisan::call('app:dbbackup');
+        return back()->with('success', 'Backup completed successfully.');
+    })->name('backup.run');
 });

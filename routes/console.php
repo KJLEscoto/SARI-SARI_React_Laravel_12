@@ -9,4 +9,4 @@ use Illuminate\Support\Facades\Schedule;
 // })->purpose('Display an inspiring quote');
 
 // Schedule::command("app:dbbackup")->everyMinute();
-Schedule::command("app:dbbackup")->daily();
+Schedule::command("app:dbbackup")->everyMinute();

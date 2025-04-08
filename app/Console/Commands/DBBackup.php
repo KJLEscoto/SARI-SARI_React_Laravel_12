@@ -50,6 +50,9 @@ class DBBackup extends Command
 
         $process = Process::run($command);
 
+        info("Running command: $command");
+        info("Process output: " . $process->output());
+
         if ($process->successful()) {
             $this->info("Backup created successfully: " . basename($path));
         } else {

@@ -1,10 +1,11 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import HeadingSmall from '@/components/heading-small';
 import { type BreadcrumbItem } from '@/types';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
-import { BookOpen, Folder, Download } from 'lucide-react';
+import { BookOpen, Folder, Download, MousePointerClick } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -62,7 +63,19 @@ export default function System({ files }: SystemProps) {
           </section>
 
           <section className="space-y-5">
-            <HeadingSmall title="Database Backup" description="Daily automatic MySQL database backups for data recovery" />
+            <div className='flex gap-2 items-end justify-between'>
+              <HeadingSmall title="Database Backup" description="Automatic MySQL database backups for data recovery" />
+              <Button
+                disabled={true}
+                variant='outline'
+                onClick={() => {
+                  router.post(route('backup.run'));
+                }}
+              >
+                Back Up
+                <MousePointerClick className='w-4 h-4' />
+              </Button>
+            </div>
             <div className="overflow-x-auto overflow-hidden rounded-md border">
               <table className="min-w-full">
                 <thead>
