@@ -21,6 +21,7 @@ class DownloadablesController extends Controller
     {
         $products = Product::orderBy('name', 'asc')->get();
         $currentDate = \Carbon\Carbon::now()->format('M d, Y');
+        $pdf_date = \Carbon\Carbon::now()->format('Y-M-j');
 
         // Load a view that will be converted to PDF
         $pdf = Pdf::loadView('pdf.product-list', compact('products', 'currentDate'))
@@ -29,7 +30,7 @@ class DownloadablesController extends Controller
             ->setPaper([0, 0, 612, 936]);
 
         // Download the PDF
-        return $pdf->download('list-of-products.pdf');
+        return $pdf->download("Product-List-{$pdf_date}.pdf");
     }
 
     /**
