@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\InventoryController;
+use App\Http\Controllers\DownloadablesController;
 use App\Http\Controllers\POSController;
 use App\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('admin/sales', SaleController::class);
 
+    Route::resource('admin/downloadables', DownloadablesController::class);
+    Route::get('/download-products-pdf', [DownloadablesController::class, 'downloadProductsPdf']);
 });
 
 require __DIR__ . '/settings.php';
