@@ -28,7 +28,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('admin/sales', SaleController::class);
 
     Route::resource('admin/downloadables', DownloadablesController::class);
-    Route::get('/download-products-pdf', [DownloadablesController::class, 'downloadProductsPdf']);
+    Route::get('/download-products-pdf', [DownloadablesController::class, 'downloadProductsPdf'])->name('product-list');
+    Route::get('/download-customer-balance', [DownloadablesController::class, 'downloadCustomerBalancePdf'])->name('customer-balance');
+    Route::get('/download-customer-pending-orders', [DownloadablesController::class, 'downloadCustomerPendingOrdersPdf'])->name('customer-pending-orders');
 });
 
 require __DIR__ . '/settings.php';

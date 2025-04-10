@@ -157,10 +157,10 @@ class CustomerController extends Controller
             Transaction::create([
                 'customer_id' => $customer->id,
                 'user_id' => Auth::user()->id,
-                'message' => "Adjusted to",
+                'message' => "Adjusted balance",
                 'amount' => $amount,
                 'type' => 'adjust',
-                'status' => 'paid',
+                'status' => 'pending',
                 'old_balance' => $old_balance,
                 'updated_balance' => $customer->balance,
             ]);

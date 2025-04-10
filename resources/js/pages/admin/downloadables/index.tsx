@@ -13,8 +13,16 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function Index() {
 
-  const handleDownloadProducts = () => {
-    window.location.href = '/download-products-pdf'; // Triggers the PDF download
+  const handleProductList = () => {
+    window.location.href = route('product-list'); // Triggers the PDF download
+  };
+
+  const handleCustomerBalance = () => {
+    window.location.href = route('customer-balance'); // Triggers the PDF download
+  };
+
+  const handleCustomerPendingOrders = () => {
+    window.location.href = route('customer-pending-orders'); // Triggers the PDF download
   };
 
   return (
@@ -26,12 +34,12 @@ export default function Index() {
           <h1>Downloadables</h1>
         </div>
 
-        <p className="text-black/75">Downloadable versions of important files.</p>
+        <p className="text-black/75 dark:text-white/80">Downloadable versions of important files.</p>
 
         <div className="grid grid-cols-3 gap-5">
           <section className="flex flex-wrap gap-2 justify-between w-full items-center px-4 py-2 border rounded-sm">
             <h2>List of Products</h2>
-            <Button type="button" variant="default" size="sm" onClick={handleDownloadProducts}>
+            <Button type="button" variant="default" size="sm" onClick={handleProductList}>
               Download
               <Download className="ml-2 h-4 w-4" />
             </Button>
@@ -39,7 +47,15 @@ export default function Index() {
 
           <section className="flex flex-wrap gap-2 justify-between w-full items-center px-4 py-2 border rounded-sm">
             <h2>Customer Balance</h2>
-            <Button type="button" variant="default" size="sm" onClick={handleDownloadProducts}>
+            <Button type="button" variant="default" size="sm" onClick={handleCustomerBalance}>
+              Download
+              <Download className="ml-2 h-4 w-4" />
+            </Button>
+          </section>
+
+          <section className="flex flex-wrap gap-2 justify-between w-full items-center px-4 py-2 border rounded-sm">
+            <h2>Customer Pending Orders</h2>
+            <Button type="button" variant="default" size="sm" onClick={handleCustomerPendingOrders}>
               Download
               <Download className="ml-2 h-4 w-4" />
             </Button>

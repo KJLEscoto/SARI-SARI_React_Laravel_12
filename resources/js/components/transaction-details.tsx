@@ -75,20 +75,17 @@ export default function TransactionDetails({ transaction, order_items, payment_m
       />
       <MoreDetails highlight label="Updated Balance" value={`₱${Number(transaction.updated_balance).toLocaleString('en-PH')}`} />
 
-      {
-        transaction.type != 'adjust' &&
-        <div className="flex items-center justify-between">
-          <p className="text-sm font-semibold">Check if Paid</p>
-          <Checkbox
-            id="paid"
-            name="paid"
-            className="cursor-pointer border-2"
-            disabled={data.status === 'paid' || processing}
-            checked={data.status === 'paid'}
-            onCheckedChange={handleCheckboxChange}
-          />
-        </div>
-      }
+      <div className="flex items-center justify-between">
+        <p className="text-sm font-semibold">Check if Paid</p>
+        <Checkbox
+          id="paid"
+          name="paid"
+          className="cursor-pointer border-2"
+          disabled={data.status === 'paid' || processing}
+          checked={data.status === 'paid'}
+          onCheckedChange={handleCheckboxChange}
+        />
+      </div>
 
       <button type="submit" className="hidden">Submit</button>
     </form>

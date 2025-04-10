@@ -31,9 +31,10 @@ export default function Index({ products, inventory_count }: { products: Product
   // Memoized Search Filtering
   const filteredProducts = useMemo(() => {
     return [...products]
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) // Sort latest first
+      .sort((a, b) => a.name.localeCompare(b.name)) // Sort A-Z by name
       .filter((product) => product.name.toLowerCase().includes(search.toLowerCase()));
   }, [products, search]);
+
 
   // delete product
   const handleDelete = (id: number) => {

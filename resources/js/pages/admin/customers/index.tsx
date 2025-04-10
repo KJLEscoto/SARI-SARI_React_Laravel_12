@@ -34,9 +34,10 @@ export default function Index({ customers_count, customers }: { customers_count:
   // Memoized Search Filtering
   const filteredCustomers = useMemo(() => {
     return [...customers]
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) // Sort latest first
+      .sort((a, b) => a.name.localeCompare(b.name)) // Sort A-Z by name
       .filter((customer) => customer.name.toLowerCase().includes(search.toLowerCase()));
   }, [customers, search]);
+
 
   // Define Table Columns
   const columns: ColumnDef<Customer>[] = [
