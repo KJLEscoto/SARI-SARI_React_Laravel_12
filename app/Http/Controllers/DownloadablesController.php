@@ -87,7 +87,9 @@ class DownloadablesController extends Controller
         $pdf = Pdf::loadView('pdf.customer-balance-summary', compact('customers', 'currentDate'))
             ->setOptions(['isHtml5ParserEnabled' => true, 'isPhpEnabled' => true, 'encoding' => 'UTF-8'])
             // ->setPaper('legal');
-            ->setPaper([0, 0, 612, 20000], 'portrait');
+            // ->setPaper([0, 0, 612, 20000], 'portrait');
+            ->setPaper([0, 0, 612, 936], 'portrait');
+
 
         // Download the PDF
         return $pdf->download("Customer-Pending-Orders-{$pdf_date}.pdf");

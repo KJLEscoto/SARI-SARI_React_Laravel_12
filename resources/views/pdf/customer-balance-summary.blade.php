@@ -87,7 +87,7 @@
             <div class="customer-section">
                 <div class="customer-header" style="margin-bottom: 10px;">
                     <h4 class="customer-name" style="font-size: large;">{{ $customer->name }}</h4>
-                    <h4>Balance: P{{ number_format($customer->balance, 2) }}</h4>
+                    <h4>Outstanding Balance: P{{ number_format($customer->balance, 2) }}</h4>
                     <h4>Last Update: {{ \Carbon\Carbon::parse($customer->updated_at)->format('M j, Y') }}</h4>
                 </div>
 
@@ -98,6 +98,9 @@
                 {{-- Display adjustment transactions --}}
                 @foreach ($customer->transactions as $transaction)
                     @if ($transaction->type === 'adjust' && $transaction->status === 'pending')
+                        @php
+                            $grand_total += $transaction->amount;
+                        @endphp
                         <div class="adjustment">
                             <div style="position: relative; width: 100%;">
                                 <strong>{{ $transaction->message }}</strong>
