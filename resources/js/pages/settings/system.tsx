@@ -3,9 +3,12 @@ import HeadingSmall from '@/components/heading-small';
 import { type BreadcrumbItem } from '@/types';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
-import { BookOpen, Folder, Download, MousePointerClick } from 'lucide-react';
+import { BookOpen, Folder, Download, MousePointerClick, Database, DatabaseBackup } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { formatDistanceToNow } from 'date-fns';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -31,11 +34,66 @@ interface SystemProps {
   files: string[]; // Explicitly define 'files' as an array of strings
 }
 
+interface DatabaseBackup {
+  id: number;
+  user_id: number;
+  path: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export default function System({ files }: SystemProps) {
-  const handleDownload = (fileName: string) => {
-    const downloadUrl = route('backup.download', { file: fileName });
-    window.location.href = downloadUrl; // Triggers the download
+  // const handleDownload = (fileName: string) => {
+  //   const downloadUrl = route('backup.download', { file: fileName });
+  //   window.location.href = downloadUrl; // Triggers the download
+  // };
+
+  const [backups, setBackups] = useState<DatabaseBackup[]>([]);
+  const [isBackingUp, setIsBackingUp] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const totalPages = Math.ceil(backups.length / itemsPerPage);
+  const paginatedBackups = backups.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+
+  const fetchBackups = () => {
+    axios.get('/get-backups')
+      .then(response => {
+        setBackups(response.data); // Set the backup data from the response
+      })
+      .catch(error => {
+        console.error("There was an error fetching the backups:", error);
+      });
   };
+
+  const backup = () => {
+    setIsBackingUp(true);
+
+    axios.post('/backup')
+      .then(response => {
+        toast.success('Backed Up successfully!');
+        setTimeout(fetchBackups, 1000); // Refresh after success
+      })
+      .catch(error => {
+        toast.error('Backup failed. Please try again.');
+        fetchBackups(); // Refresh after failure
+      })
+      .finally(() => {
+        setIsBackingUp(false);
+      });
+  };
+
+
+  const download = (fileName?: string) => {
+    const downloadUrl = route('download.backup', { file: fileName });
+    window.location.href = downloadUrl;
+  }
+
+  useEffect(() => {
+    fetchBackups(); // Initial load
+  }, []);
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -66,14 +124,13 @@ export default function System({ files }: SystemProps) {
             <div className='flex gap-2 items-end justify-between'>
               <HeadingSmall title="Database Backup" description="Automatic MySQL database backups for data recovery" />
               <Button
-                disabled={true}
+                // disabled={true}
                 variant='outline'
-                onClick={() => {
-                  router.post(route('backup.run'));
-                }}
+                disabled={isBackingUp}
+                onClick={backup}
               >
-                Back Up
-                <MousePointerClick className='w-4 h-4' />
+                {isBackingUp ? 'Backing Up...' : 'Back Up'}
+                <DatabaseBackup className='w-4 h-4' />
               </Button>
             </div>
             <div className="overflow-x-auto overflow-hidden rounded-md border">
@@ -81,10 +138,11 @@ export default function System({ files }: SystemProps) {
                 <thead>
                   <tr>
                     <th className="py-3 px-4 text-left text-xs text-black dark:text-white">File Name</th>
-                    <th className="py-3 px-4 text-left text-xs text-black dark:text-white">Get a copy</th>
+                    <th className="py-3 px-4 text-left text-xs text-black dark:text-white">Backed up since</th>
+                    <th className="py-3 px-4 text-left text-xs text-black dark:text-white">Download</th>
                   </tr>
                 </thead>
-                <tbody>
+                {/* <tbody>
                   {files.length > 0 ? (
                     files.map((file, index) => {
                       const fileName = file.split('/').pop() ?? 'Unknown File'; // Extract file name
@@ -101,9 +159,36 @@ export default function System({ files }: SystemProps) {
                         </tr>
                       );
                     })
+                  ): (
+                      <tr className = "text-sm border-t">
+                      <td colSpan = { 2 } className = "py-3 px-4 text-black dark:text-white/50 text-center">
+                        No backups available.
+                </td>
+              </tr>
+                  )}
+            </tbody> */}
+                <tbody>
+                  {backups.length > 0 ? (
+                    paginatedBackups.map((backup, index) => {
+                      const fileName = backup.path.split('/').pop();
+                      return (
+                        <tr key={index} className="text-sm border-t">
+                          <td className="py-3 px-4 text-black dark:text-white text-nowrap flex items-center gap-2">
+                            <Database className='w-4 h-4' />
+                            {fileName}
+                          </td>
+                          <td className="py-3 px-4 text-black dark:text-white text-nowrap">{backup.created_at && formatDistanceToNow(new Date(backup.created_at))}</td>
+                          <td className="py-3 px-4">
+                            <Button variant="default" size="sm" onClick={() => download(fileName)}>
+                              <Download className="w-3 h-3" />
+                            </Button>
+                          </td>
+                        </tr>
+                      );
+                    })
                   ) : (
                     <tr className="text-sm border-t">
-                      <td colSpan={2} className="py-3 px-4 text-black dark:text-white/50 text-center">
+                      <td colSpan={3} className="py-3 px-4 text-black dark:text-white/50 text-center">
                         No backups available.
                       </td>
                     </tr>
@@ -111,9 +196,32 @@ export default function System({ files }: SystemProps) {
                 </tbody>
               </table>
             </div>
+            {totalPages > 1 && (
+              <div className="flex justify-end items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                >
+                  Prev
+                </Button>
+                <span className="text-sm text-black dark:text-white">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                >
+                  Next
+                </Button>
+              </div>
+            )}
           </section>
         </div>
-      </SettingsLayout>
-    </AppLayout>
+      </SettingsLayout >
+    </AppLayout >
   );
 }

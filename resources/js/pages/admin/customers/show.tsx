@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import dayjs from "dayjs";
 import { FormEventHandler, useRef, useState } from 'react';
-import { ChevronLeft, Edit3, Minus, Plus, Check, Settings2, LucideInfo } from "lucide-react";
+import { ChevronLeft, Edit3, Minus, Plus, Check, Settings2, LucideInfo, Equal } from "lucide-react";
 import { MoreDetails } from '@/components/more-details';
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -173,22 +173,29 @@ export default function Show({ customer, transactions, order_items, payment_meth
                         </p>
                         <RadioGroup
                           id='operator'
-                          className='flex gap-5 items-center'
+                          className='text-black/80 dark:text-white'
                           value={data.operator}
                           onValueChange={(value) => setData('operator', value)} // Update state when value changes
                         >
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="add" id="r1" />
-                            <Label htmlFor="r1" className='flex items-center gap-1 cursor-pointer'>
+                            <Label htmlFor="r1" className='cursor-pointer flex items-center gap-1'>
                               Borrow
-                              <Plus className='w-4 h-4 text-red-500' />
+                              <Plus className='w-4 h-4' />
                             </Label>
                           </div>
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="subtract" id="r2" />
-                            <Label htmlFor="r2" className='flex items-center gap-1 cursor-pointer'>
+                            <Label htmlFor="r2" className='cursor-pointer flex items-center gap-1'>
                               Pay
-                              <Minus className='w-4 h-4 text-blue-500' />
+                              <Minus className='w-4 h-4' />
+                            </Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="adjust" id="r3" />
+                            <Label htmlFor="r3" className='cursor-pointer flex items-center gap-1'>
+                              Adjust
+                              <Equal className='w-4 h-4' />
                             </Label>
                           </div>
                         </RadioGroup>
@@ -221,7 +228,9 @@ export default function Show({ customer, transactions, order_items, payment_meth
                               <span className="font-semibold ml-1">
                                 ₱ {data.operator === 'add'
                                   ? (Number(customer.balance) + Number(data.update_balance)).toLocaleString("en-PH")
-                                  : (Number(customer.balance) - Number(data.update_balance)).toLocaleString("en-PH")}
+                                  : data.operator === 'subtract'
+                                    ? (Number(customer.balance) - Number(data.update_balance)).toLocaleString("en-PH")
+                                    : (Number(data.update_balance)).toLocaleString("en-PH")}
                               </span>
                             </p>
                           </section>

@@ -36,6 +36,14 @@ export default function Index() {
               <Download className="ml-2 h-4 w-4" />
             </Button>
           </section>
+
+          <section className="flex flex-wrap gap-2 justify-between w-full items-center px-4 py-2 border rounded-sm">
+            <h2>Customer Balance</h2>
+            <Button type="button" variant="default" size="sm" onClick={handleDownloadProducts}>
+              Download
+              <Download className="ml-2 h-4 w-4" />
+            </Button>
+          </section>
         </div>
       </div>
     </AppLayout>

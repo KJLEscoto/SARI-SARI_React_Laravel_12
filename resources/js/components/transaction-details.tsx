@@ -32,7 +32,7 @@ export default function TransactionDetails({ transaction, order_items, payment_m
 
   return (
     <form onSubmit={submit} className="*:py-3 *:px-4 border rounded-lg *:hover:bg-gray-50 *:dark:hover:bg-black overflow-hidden">
-      <MoreDetails label="Date" value={dayjs(transaction.created_at).format("MMM DD, YYYY | h:mm a")} />
+      <MoreDetails label="Date" value={dayjs(transaction.created_at).format("MMM DD, YYYY")} />
       <MoreDetails label="Handled by" value={transaction.user?.name} />
 
       {transaction.type === "order" && (
@@ -75,17 +75,20 @@ export default function TransactionDetails({ transaction, order_items, payment_m
       />
       <MoreDetails highlight label="Updated Balance" value={`₱${Number(transaction.updated_balance).toLocaleString('en-PH')}`} />
 
-      <div className="flex items-center justify-between">
-        <p className="text-sm font-semibold">Check if Paid</p>
-        <Checkbox
-          id="paid"
-          name="paid"
-          className="cursor-pointer border-2"
-          disabled={data.status === 'paid' || processing}
-          checked={data.status === 'paid'}
-          onCheckedChange={handleCheckboxChange}
-        />
-      </div>
+      {
+        transaction.type != 'adjust' &&
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-semibold">Check if Paid</p>
+          <Checkbox
+            id="paid"
+            name="paid"
+            className="cursor-pointer border-2"
+            disabled={data.status === 'paid' || processing}
+            checked={data.status === 'paid'}
+            onCheckedChange={handleCheckboxChange}
+          />
+        </div>
+      }
 
       <button type="submit" className="hidden">Submit</button>
     </form>

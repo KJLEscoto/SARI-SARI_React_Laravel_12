@@ -118,7 +118,7 @@ class CustomerController extends Controller
         // Validate the request
         $validate = $request->validate([
             'update_balance' => 'required|numeric|min:0.01',
-            'operator' => 'required|in:add,subtract',
+            'operator' => 'required|in:add,subtract,adjust',
         ]);
 
         // Find the customer
@@ -128,7 +128,7 @@ class CustomerController extends Controller
         $amount = (float) $request->update_balance;
         $old_balance = $customer->balance;
 
-        if ($request->operator === 'add') {
+        if ($validate['operator'] === 'add') {
             $customer->balance += $amount;
             Transaction::create([
                 'customer_id' => $customer->id,
@@ -140,7 +140,7 @@ class CustomerController extends Controller
                 'old_balance' => $old_balance,
                 'updated_balance' => $customer->balance,
             ]);
-        } else {
+        } else if ($validate['operator'] === 'subtract') {
             $customer->balance -= $amount;
             Transaction::create([
                 'customer_id' => $customer->id,
@@ -148,6 +148,18 @@ class CustomerController extends Controller
                 'message' => 'Paid an amount',
                 'amount' => $amount,
                 'type' => 'pay',
+                'status' => 'paid',
+                'old_balance' => $old_balance,
+                'updated_balance' => $customer->balance,
+            ]);
+        } else {
+            $customer->balance = $amount;
+            Transaction::create([
+                'customer_id' => $customer->id,
+                'user_id' => Auth::user()->id,
+                'message' => "Adjusted to",
+                'amount' => $amount,
+                'type' => 'adjust',
                 'status' => 'paid',
                 'old_balance' => $old_balance,
                 'updated_balance' => $customer->balance,

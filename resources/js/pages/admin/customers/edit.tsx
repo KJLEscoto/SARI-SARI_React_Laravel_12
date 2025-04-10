@@ -97,7 +97,7 @@ export default function Edit({ customer }: { customer: Customer }) {
 
             <section className="space-y-1">
               <Label htmlFor="phone">Phone</Label>
-              <Input id="phone" type="text" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+              <Input id="phone" type="text" value={phone} onChange={(e) => setPhone(e.target.value)} />
               <InputError message={errors.phone} />
             </section>
 

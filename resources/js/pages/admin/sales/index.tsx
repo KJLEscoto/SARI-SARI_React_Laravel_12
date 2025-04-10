@@ -39,6 +39,7 @@ export default function Index({ sales }: { sales: any[] }) {
               }
             </div>))
         }
+        TBD
       </div>
     </AppLayout>
   );

@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\Admin\BackupController;
+use App\Http\Controllers\DatabaseBackup;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
+use App\Models\DatabaseBackup as ModelsDatabaseBackup;
 use Illuminate\Console\View\Components\Info;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -39,9 +41,14 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/backup/download/{file}', [BackupController::class, 'download'])->name('backup.download');
 
-    Route::post('/backup/run', function () {
-        info("Running backup from web...");
-        Artisan::call('app:dbbackup');
-        return back()->with('success', 'Backup completed successfully.');
-    })->name('backup.run');
+    Route::get('/get-backups', [DatabaseBackup::class, 'index']);
+    Route::get('/download-backups/{file}', [DatabaseBackup::class, 'download'])->name('download.backup');
+
+    Route::post('/backup', [DatabaseBackup::class, 'backup'])->name('db-backup');
+
+    // Route::post('/backup/run', function () {
+    //     info("Running backup from web...");
+    //     Artisan::call('app:dbbackup');
+    //     return back()->with('success', 'Backup completed successfully.');
+    // })->name('backup.run');
 });

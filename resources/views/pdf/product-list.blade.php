@@ -53,6 +53,7 @@
     <table>
         <thead>
             <tr>
+                <th>#</th>
                 <th>Name</th>
                 <th>Stock</th>
                 <th>M.P.</th>
@@ -61,8 +62,9 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($products as $product)
-                <tr>
+            @foreach ($products as $index => $product)
+                <tr style="font-size: 14px;">
+                    <td>{{ $index + 1 }}</td>
                     <td>{{ $product['name'] }}</td>
                     <td>{{ number_format($product['stock']) }}</td>
                     <td>
