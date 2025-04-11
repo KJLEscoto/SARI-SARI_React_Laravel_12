@@ -196,7 +196,7 @@
                 @if ($grand_total != 0)
                     <div class="grand-total"
                         style="position: relative; width: 100%; margin-top: 15px;  color: #26445a;">
-                        Grand Total
+                        Outstanding Balance
                         <p style="position: absolute; right: 65px; margin: 0; text-decoration: underline;">
                             P{{ number_format($grand_total, 2) }}
                         </p>

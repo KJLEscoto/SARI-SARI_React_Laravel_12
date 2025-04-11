@@ -4,17 +4,25 @@ import { Button } from '@/components/ui/button';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import dayjs from "dayjs";
 import { FormEventHandler, useRef, useState } from 'react';
-import { ChevronLeft, Edit3, Minus, Plus, Check, Settings2, LucideInfo, Equal } from "lucide-react";
+import { ChevronLeft, Edit3, Minus, Plus, Check, Settings2, LucideInfo, Equal, FilterIcon, CalendarIcon, ArrowRight, ArrowLeft } from "lucide-react";
 import { MoreDetails } from '@/components/more-details';
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import InputError from '@/components/input-error';
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { getBalanceColor } from '@/lib/utils';
+import { cn, getBalanceColor } from '@/lib/utils';
 import { useInitials } from '@/hooks/use-initials';
 import TransactionDetails from '@/components/transaction-details';
 import BalanceInfo from '@/components/balance-info';
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { format } from 'date-fns';
+import DatePicker from "react-datepicker";
 
 export default function Show({ customer, transactions, order_items, payment_method }: { customer: Customer; transactions: Transaction[]; order_items: Product[]; payment_method: string }) {
   const breadcrumbs: BreadcrumbItem[] = [
@@ -81,6 +89,17 @@ export default function Show({ customer, transactions, order_items, payment_meth
     clearErrors();
     reset();
   };
+
+  const [month, setMonth] = useState<Date | null>(null);
+  const filteredTransactions = transactions.filter((t) => {
+    if (!month) return true;
+    const tDate = new Date(t.created_at);
+    return (
+      tDate.getMonth() === month.getMonth() &&
+      tDate.getFullYear() === month.getFullYear()
+    );
+  });
+
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -172,6 +191,7 @@ export default function Show({ customer, transactions, order_items, payment_meth
                           Select Operator:
                         </p>
                         <RadioGroup
+                          aria-labelledby="operator-label"
                           id='operator'
                           className='text-black/80 dark:text-white'
                           value={data.operator}
@@ -262,48 +282,139 @@ export default function Show({ customer, transactions, order_items, payment_meth
             {
               transactions.length != 0 &&
               <section className="flex flex-col gap-3">
-                <div className='font-semibold flex items-start gap-1'>
-                  <p>Transaction History</p>
-                  <span className='text-xs'>
-                    {customer && customer.transactions_count != null && customer.transactions_count > 0
-                      ? customer.transactions_count
-                      : null}
-                  </span>
+                <div className='flex justify-between items-end'>
+                  <section className='font-semibold flex items-start gap-1'>
+                    <p>Transaction History</p>
+                    <span className='text-xs'>
+                      {customer && customer.transactions_count != null && customer.transactions_count > 0
+                        ? customer.transactions_count
+                        : null}
+                    </span>
+                  </section>
+                  <section>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-auto justify-start text-left font-normal"
+                          )}
+                        >
+                          <FilterIcon className="h-4 w-4" />
+                          {month && format(month, "MMMM yyyy")}
+                        </Button>
+                      </PopoverTrigger>
+
+                      <PopoverContent className="w-auto p-0">
+                        <DatePicker
+                          selected={month}
+                          onChange={(date: Date | null) => setMonth(date)}
+                          dateFormat="MM/yyyy"
+                          showMonthYearPicker
+                          inline
+                          calendarClassName="!bg-white !rounded-xl !shadow-lg !p-4 !w-fit !cursor-pointer"
+                          renderCustomHeader={({
+                            date,
+                            decreaseMonth,
+                            increaseMonth,
+                            prevMonthButtonDisabled,
+                            nextMonthButtonDisabled,
+                          }) => {
+                            const handleDecreaseMonth = () => {
+                              const newDate = new Date(date.getFullYear(), date.getMonth() - 1, 1);
+                              setMonth(newDate);
+                              decreaseMonth();
+                            };
+
+                            const handleIncreaseMonth = () => {
+                              const newDate = new Date(date.getFullYear(), date.getMonth() + 1, 1);
+                              setMonth(newDate);
+                              increaseMonth();
+                            };
+
+                            return (
+                              <div className="flex justify-between gap-3 items-center">
+                                <button
+                                  onClick={handleDecreaseMonth}
+                                  disabled={prevMonthButtonDisabled}
+                                  className="text-gray-500 hover:text-gray-700"
+                                >
+                                  <ArrowLeft className="w-4 h-4 cursor-pointer" />
+                                </button>
+                                <span className="month-name font-semibold text-base text-black bg-gray-100 rounded-xl p-2">
+                                  {date.toLocaleString('default', { month: 'long' })}
+                                </span>
+                                <button
+                                  onClick={handleIncreaseMonth}
+                                  disabled={nextMonthButtonDisabled}
+                                  className="text-gray-500 hover:text-gray-700"
+                                >
+                                  <ArrowRight className="w-4 h-4 cursor-pointer" />
+                                </button>
+                              </div>
+                            );
+                          }}
+                        />
+
+                      </PopoverContent>
+                    </Popover>
+                    <Button variant="ghost" className='ml-2' disabled={!month} size="sm" onClick={() => setMonth(null)}>
+                      Clear
+                    </Button>
+
+
+                  </section>
                 </div>
                 <div className='*:p-5 *:text-gray-700 *:dark:text-gray-300 border *:hover:bg-gray-50 *:dark:hover:bg-accent rounded-lg  overflow-y-auto overflow-x-hidden max-h-60'>
                   {
-                    transactions.map(transaction => (
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <div key={transaction.id} className="flex md:flex-row flex-col w-full md:justify-between md:items-start md:gap-2 py-2 cursor-pointer" onClick={() => handleTransactionClick(transaction)} >
-                            <section className='flex items-start gap-1'>
-                              <div className='text-sm mt-0.5'>
-                                {
-                                  transaction.status === 'paid' ? (
+                    filteredTransactions.length === 0 ? (
+                      <div className="text-center text-muted-foreground py-4">
+                        No Transactions Found.
+                      </div>
+                    ) : (
+                      filteredTransactions.map((transaction) => (
+                        <Dialog key={transaction.id}>
+                          <DialogTrigger asChild>
+                            <div
+                              className="flex md:flex-row flex-col w-full md:justify-between md:items-start md:gap-2 py-2 cursor-pointer"
+                              onClick={() => handleTransactionClick(transaction)}
+                            >
+                              <section className="flex items-start gap-1">
+                                <div className="text-sm mt-0.5">
+                                  {transaction.status === "paid" ? (
                                     <Check className="w-4 h-4 text-green-500" />
-                                  ) : transaction.type === 'borrow' || transaction.status === 'pending' ? (
+                                  ) : transaction.type === "borrow" || transaction.status === "pending" ? (
                                     <Plus className="w-4 h-4 text-red-500" />
-                                  ) : null
-                                }
-                              </div>
-                              <div>
-                                <p className='text-sm truncate'>{transaction.message}</p>
-                                <p className='font-semibold'>{`₱${Number(transaction.amount).toLocaleString("en-PH")}`}</p>
-                              </div>
-                            </section>
-                            <section className="font-medium text-xs text-end space-y-2">
-                              <h1 className='text-sm text-black dark:text-white md:block hidden'><span className='text-gray-500'>Updated Balance:</span> {`₱${Number(transaction.updated_balance).toLocaleString("en-PH")}`}</h1>
-                              <p>@ {dayjs(transaction.created_at).format("MMM DD, YYYY")}</p>
-                            </section>
-                          </div>
-                        </DialogTrigger>
+                                  ) : null}
+                                </div>
+                                <div>
+                                  <p className="text-sm truncate">{transaction.message}</p>
+                                  <p className="font-semibold">
+                                    {`₱${Number(transaction.amount).toLocaleString("en-PH")}`}
+                                  </p>
+                                </div>
+                              </section>
+                              <section className="font-medium text-xs text-end space-y-2">
+                                <h1 className="text-sm text-black dark:text-white md:block hidden">
+                                  <span className="text-gray-500">Updated Balance:</span>{" "}
+                                  {`₱${Number(transaction.updated_balance).toLocaleString("en-PH")}`}
+                                </h1>
+                                <p>@ {dayjs(transaction.created_at).format("MMM DD, YYYY")}</p>
+                              </section>
+                            </div>
+                          </DialogTrigger>
 
-                        <DialogContent>
-                          <DialogTitle>Transaction Details</DialogTitle>
-                          <TransactionDetails payment_method={payment_method} transaction={transaction} order_items={order_items} />
-                        </DialogContent>
-                      </Dialog>
-                    ))
+                          <DialogContent>
+                            <DialogTitle>Transaction Details</DialogTitle>
+                            <TransactionDetails
+                              payment_method={payment_method}
+                              transaction={transaction}
+                              order_items={order_items}
+                            />
+                          </DialogContent>
+                        </Dialog>
+                      ))
+                    )
                   }
                 </div>
               </section>

@@ -5,7 +5,20 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { ClipboardCheck, ClipboardCopy, LucideIcon } from 'lucide-react';
-import * as React from "react"
+import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from "recharts"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart"
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -57,7 +70,7 @@ const SalesList = ({ title, icon: Icon, status, sales, getInitials }: SalesListP
       <Card className="overflow-auto max-h-60 border divide-y py-0 w-full rounded-md flex flex-col gap-0">
         {filteredSales.length > 0 ? (
           filteredSales.map((sale) => (
-            <div className="w-full flex justify-between p-3 hover:bg-gray-50" key={sale.id}>
+            <div className="w-full flex justify-between px-5 py-3 hover:bg-gray-50" key={sale.id}>
               <section className="flex gap-3 items-start">
                 {sale.product.image && (
                   <img
@@ -103,22 +116,6 @@ const SalesList = ({ title, icon: Icon, status, sales, getInitials }: SalesListP
     </section>
   );
 };
-
-import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from "recharts"
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart"
 
 const MostSold = ({ sales }: { sales: Sale[] }) => {
   // Aggregate total quantity sold per product
@@ -221,7 +218,7 @@ export default function Index({ related_sales }: { related_sales: any[] }) {
       <div className="flex h-full flex-1 flex-col gap-5 p-4">
         <MostSold sales={related_sales} />
 
-        <div className="flex gap-5 w-full">
+        <div className="flex lg:flex-row flex-col gap-5 w-full">
           <SalesList title="Pending" icon={ClipboardCopy} status="pending" sales={related_sales} getInitials={getInitials} />
           <SalesList title="Paid" icon={ClipboardCheck} status="paid" sales={related_sales} getInitials={getInitials} />
         </div>

@@ -383,7 +383,7 @@ export default function Index({ products, cashier, customers }: { products: Prod
                                 <p className='text-[12px]'>₱{product.selling_price.toLocaleString("en-PH")}</p>
                               </section>
                             </div>
-                            <div className='w-full text-center self-center'>x {quantity}</div>
+                            <div className='w-full text-end self-center'>x {quantity}</div>
                             <div className='w-full text-end text-nowrap self-center'>₱{(Number(product.selling_price) * quantity).toLocaleString("en-PH")}</div>
                           </li>
                         ))}
