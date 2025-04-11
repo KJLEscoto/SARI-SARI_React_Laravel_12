@@ -1,3 +1,4 @@
+import Cards from '@/components/downloadables-card';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
@@ -36,39 +37,10 @@ export default function Index() {
 
         <p className="text-black/75 dark:text-white/80">Downloadable versions of important files.</p>
 
-        <div className="grid grid-cols-3 gap-5">
-          <section className="flex flex-wrap gap-2 justify-between w-full items-center px-4 py-2 border rounded-sm">
-            <div className='space-y-1 w-1/2'>
-              <h2>Product List</h2>
-              <p className='text-xs dark:text-white/80'>List of products in the inventory</p>
-            </div>
-            <Button type="button" variant="default" size="sm" onClick={handleProductList}>
-              Download
-              <Download className="ml-1 h-4 w-4" />
-            </Button>
-          </section>
-
-          <section className="flex flex-wrap gap-2 justify-between w-full items-center px-4 py-2 border rounded-sm">
-            <div className='space-y-1 w-1/2'>
-              <h2>Pending Balance</h2>
-              <p className='text-xs dark:text-white/80'>Unsettled transactions that are yet to be paid</p>
-            </div>
-            <Button type="button" variant="default" size="sm" onClick={handleCustomerBalance}>
-              Download
-              <Download className="ml-1 h-4 w-4" />
-            </Button>
-          </section>
-
-          <section className="flex flex-wrap gap-2 justify-between w-full items-center px-4 py-2 border rounded-sm">
-            <div className='space-y-1 w-1/2'>
-              <h2>Customer Balance Summary</h2>
-              <p className='text-xs dark:text-white/80'>Detailed overview of transactions and current balance</p>
-            </div>
-            <Button type="button" variant="default" size="sm" onClick={handleCustomerPendingOrders}>
-              Download
-              <Download className="ml-1 h-4 w-4" />
-            </Button>
-          </section>
+        <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-5">
+          <Cards title='Product List' description='List of products in the inventory' onClick={handleProductList} />
+          <Cards title='Pending Balance' description='Unsettled oustanding balance' onClick={handleCustomerBalance} />
+          <Cards title='Customer Balance Summary' description='Transaction details & balance' onClick={handleCustomerPendingOrders} />
         </div>
       </div>
     </AppLayout>

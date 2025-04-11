@@ -146,7 +146,7 @@
                                     P{{ number_format($transaction->amount, 2) }}
                                 </p>
                             </div>
-                            <div style="margin-left: 32px; position: relative; width: 100%;">
+                            <div style="margin-left: 32px; position: relative; width: 100%; color:#547086;">
                                 <strong>Updated Balance</strong>
                                 <p style="position: absolute; right: 80px; margin: 0;">
                                     <strong>P{{ number_format($transaction->updated_balance, 2) }}</strong>
