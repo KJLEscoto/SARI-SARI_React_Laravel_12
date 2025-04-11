@@ -93,22 +93,47 @@
 
                 @php
                     $grand_total = 0;
+                    $combined = collect();
+
+                    foreach ($customer->transactions as $transaction) {
+                        if ($transaction->status === 'pending') {
+                            $sale = $customer->sales->firstWhere('created_at', $transaction->created_at);
+                            $combined->push([
+                                'type' => $transaction->type,
+                                'transaction' => $transaction,
+                                'sale' => $sale,
+                                'created_at' => $transaction->created_at,
+                            ]);
+                        }
+                    }
+
+                    $combined = $combined->sortBy('created_at');
                 @endphp
 
-                {{-- Display adjustment transactions --}}
-                @foreach ($customer->transactions as $transaction)
-                    @if ($transaction->type === 'adjust' && $transaction->status === 'pending')
-                        @php
+                @foreach ($combined as $entry)
+                    @php
+                        $transaction = $entry['transaction'];
+                        $sale = $entry['sale'];
+
+                        if ($transaction->type === 'adjust') {
+                            $grand_total = 0;
+                            $grand_total = $transaction->updated_balance;
+                        } else {
                             $grand_total += $transaction->amount;
-                        @endphp
-                        <div class="adjustment">
-                            <div style="position: relative; width: 100%;">
-                                <strong>{{ $transaction->message }}</strong>
-                                <p style="position: absolute; right: 50px; margin: 0; font-style: italic; ">
-                                    {{ \Carbon\Carbon::parse($transaction->created_at)->format('M j, Y') }}
-                                </p>
-                            </div>
-                            <div style="margin-left: 32px; position: relative; width: 100%; padding-top: 5px;">
+                        }
+                    @endphp
+
+                    <div class="transaction">
+                        <div style="position: relative; width: 100%; margin-bottom: -10px; margin-top: 5px;">
+                            <strong>• {{ $transaction->message }}</strong>
+                            <p style="position: absolute; right: 50px; margin: 0; font-style: italic;">
+                                {{ \Carbon\Carbon::parse($transaction->created_at)->format('M j, Y') }}
+                            </p>
+                        </div>
+
+                        {{-- If it's an adjustment --}}
+                        @if ($transaction->type === 'adjust' || $transaction->type === 'borrow')
+                            <div style="margin-left: 32px; position: relative; width: 100%; margin-top: 15px;">
                                 Old Balance
                                 <p style="position: absolute; right: 80px; margin: 0;">
                                     P{{ number_format($transaction->old_balance, 2) }}
@@ -127,17 +152,69 @@
                                     <strong>P{{ number_format($transaction->updated_balance, 2) }}</strong>
                                 </p>
                             </div>
-                        </div>
-                    @endif
+                        @else
+                            {{-- If it's a sale --}}
+                            @if ($sale && $sale->order_items->count())
+                                @foreach ($sale->order_items as $item)
+                                    <div class="order-item" style="margin-bottom: -15px; margin-top: 5px;">
+                                        <p style="margin-bottom: -10px;">{{ $item->product->name ?? 'N/A' }}</p>
+                                        <div style="position: relative; width: 100%;">
+                                            <p>P{{ number_format($item->bought_selling_price, 2) }} x
+                                                {{ $item->quantity }} pcs</p>
+                                            <p style="position: absolute; right: 50px; top: -20px; margin: 0;">
+                                                P{{ number_format($item->sub_total, 2) }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                @endforeach
+
+                                <div class="total-amount"
+                                    style="margin-top: 10px; position: relative; width: 100%; color:#636363;">
+                                    Subtotal
+                                    <p style="position: absolute; right: 80px; margin: 0;">
+                                        P{{ number_format($transaction->amount, 2) }}
+                                    </p>
+                                </div>
+                                <div
+                                    style="margin-left: 32px; position: relative; width: 100%; margin-top: 5px; color:#547086;">
+                                    <strong>Updated Balance</strong>
+                                    <p style="position: absolute; right: 80px; margin: 0;">
+                                        <strong>P{{ number_format($transaction->updated_balance, 2) }}</strong>
+                                    </p>
+                                </div>
+                            @else
+                                {{-- Fallback if sale data is missing --}}
+                                <div style="margin-left: 32px; color: gray;">
+                                    Sale details not found.
+                                </div>
+                            @endif
+                        @endif
+                    </div>
                 @endforeach
 
-                {{-- Match transactions with sales --}}
-                @foreach ($customer->sales as $sale)
+                {{-- Grand Total --}}
+                @if ($grand_total != 0)
+                    <div class="grand-total"
+                        style="position: relative; width: 100%; margin-top: 15px;  color: #26445a;">
+                        Grand Total
+                        <p style="position: absolute; right: 65px; margin: 0; text-decoration: underline;">
+                            P{{ number_format($grand_total, 2) }}
+                        </p>
+                    </div>
+                @endif
+
+            </div>
+        @endforeach
+
+    </div>
+</body>
+
+</html>
+
+{{-- Match transactions with sales --}}
+{{-- @foreach ($customer->sales as $sale)
                     @foreach ($customer->transactions as $transaction)
-                        @if (
-                            $transaction->status === 'pending' &&
-                                $transaction->created_at == $sale->created_at &&
-                                $transaction->type !== 'adjust')
+                        @if ($transaction->status === 'pending' && $transaction->created_at == $sale->created_at && $transaction->type !== 'adjust')
                             @php
                                 $grand_total += $transaction->amount;
                             @endphp
@@ -172,17 +249,4 @@
                             </div>
                         @endif
                     @endforeach
-                @endforeach
-
-                {{-- Display grand total --}}
-                <div class="grand-total" style="position: relative; width: 100%;">
-                    Grand Total
-                    <p style="position: absolute; right: 65px; margin: 0; text-decoration: underline;">
-                        P{{ number_format($grand_total, 2) }}</p>
-                </div>
-            </div>
-        @endforeach
-    </div>
-</body>
-
-</html>
+                @endforeach --}}

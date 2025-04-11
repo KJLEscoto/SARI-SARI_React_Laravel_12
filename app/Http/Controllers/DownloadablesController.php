@@ -49,7 +49,7 @@ class DownloadablesController extends Controller
             ->setPaper([0, 0, 612, 936], 'landscape');
 
         // Download the PDF
-        return $pdf->download("Customer-Balance-{$pdf_date}.pdf");
+        return $pdf->download("Pending-Balance-{$pdf_date}.pdf");
     }
 
     public function downloadCustomerPendingOrdersPdf()
@@ -92,6 +92,6 @@ class DownloadablesController extends Controller
 
 
         // Download the PDF
-        return $pdf->download("Customer-Pending-Orders-{$pdf_date}.pdf");
+        return $pdf->download("Customer-Balance-Summary-{$pdf_date}.pdf");
     }
 }

@@ -198,9 +198,11 @@ class CustomerController extends Controller
             'status' => $validate['status'],
         ]);
 
-        $customer_sale->update([
-            'status' => $validate['status'],
-        ]);
+        if ($customer_sale) {
+            $customer_sale->update([
+                'status' => $validate['status'],
+            ]);
+        }
 
         return Redirect::back()->with('update', 'Transaction status has been updated.');
     }
