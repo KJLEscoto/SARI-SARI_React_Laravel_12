@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OrderItem;
 use App\Models\Sale;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -13,8 +14,13 @@ class SaleController extends Controller
      */
     public function index()
     {
-        $sales = Sale::with(['customer', 'user'])->where('status', 'paid')->get();
-        return Inertia::render('admin/sales/index', compact('sales'));
+        // $sales = Sale::with(['customer', 'user'])->where('status', 'paid')->latest()->get();
+        $related_sales = OrderItem::with([
+            'product',
+            'sale.customer'
+        ])->latest()
+            ->get();
+        return Inertia::render('admin/sales/index', compact('related_sales'));
     }
 
     /**
