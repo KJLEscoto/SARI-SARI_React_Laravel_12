@@ -19,7 +19,7 @@
         }
 
         .container {
-            padding: 5px;
+            padding: 16px;
             border: 1px solid #ccc;
         }
 
