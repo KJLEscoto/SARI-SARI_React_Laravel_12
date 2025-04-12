@@ -90,15 +90,25 @@ export default function Show({ customer, transactions, order_items, payment_meth
     reset();
   };
 
-  const [month, setMonth] = useState<Date | null>(null);
-  const filteredTransactions = transactions.filter((t) => {
-    if (!month) return true;
-    const tDate = new Date(t.created_at);
-    return (
-      tDate.getMonth() === month.getMonth() &&
-      tDate.getFullYear() === month.getFullYear()
-    );
-  });
+  // const [month, setMonth] = useState<Date | null>(null);
+  // const filteredTransactions = transactions.filter((t) => {
+  //   if (!month) return true;
+  //   const tDate = new Date(t.created_at);
+  //   return (
+  //     tDate.getMonth() === month.getMonth() &&
+  //     tDate.getFullYear() === month.getFullYear()
+  //   );
+  // });
+
+  const [selectedMonth, setSelectedMonth] = useState<string>(dayjs().format("YYYY-MM"));
+  const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedMonth(e.target.value);
+  };
+
+  const filteredTransactions = transactions.filter((t) =>
+    dayjs(t.created_at).format("YYYY-MM") === selectedMonth
+  );
+
 
 
   return (
@@ -292,77 +302,12 @@ export default function Show({ customer, transactions, order_items, payment_meth
                     </span>
                   </section>
                   <section>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-auto justify-start text-left font-normal"
-                          )}
-                        >
-                          <FilterIcon className="h-4 w-4" />
-                          {month && format(month, "MMMM yyyy")}
-                        </Button>
-                      </PopoverTrigger>
-
-                      <PopoverContent className="w-auto p-0">
-                        <DatePicker
-                          selected={month}
-                          onChange={(date: Date | null) => setMonth(date)}
-                          dateFormat="MM/yyyy"
-                          showMonthYearPicker
-                          inline
-                          calendarClassName="!bg-white !rounded-xl !shadow-lg !p-4 !w-fit !cursor-pointer"
-                          renderCustomHeader={({
-                            date,
-                            decreaseMonth,
-                            increaseMonth,
-                            prevMonthButtonDisabled,
-                            nextMonthButtonDisabled,
-                          }) => {
-                            const handleDecreaseMonth = () => {
-                              const newDate = new Date(date.getFullYear(), date.getMonth() - 1, 1);
-                              setMonth(newDate);
-                              decreaseMonth();
-                            };
-
-                            const handleIncreaseMonth = () => {
-                              const newDate = new Date(date.getFullYear(), date.getMonth() + 1, 1);
-                              setMonth(newDate);
-                              increaseMonth();
-                            };
-
-                            return (
-                              <div className="flex justify-between gap-3 items-center">
-                                <button
-                                  onClick={handleDecreaseMonth}
-                                  disabled={prevMonthButtonDisabled}
-                                  className="text-gray-500 hover:text-gray-700"
-                                >
-                                  <ArrowLeft className="w-4 h-4 cursor-pointer" />
-                                </button>
-                                <span className="month-name font-semibold text-base text-black bg-gray-100 rounded-xl p-2">
-                                  {date.toLocaleString('default', { month: 'long' })}
-                                </span>
-                                <button
-                                  onClick={handleIncreaseMonth}
-                                  disabled={nextMonthButtonDisabled}
-                                  className="text-gray-500 hover:text-gray-700"
-                                >
-                                  <ArrowRight className="w-4 h-4 cursor-pointer" />
-                                </button>
-                              </div>
-                            );
-                          }}
-                        />
-
-                      </PopoverContent>
-                    </Popover>
-                    <Button variant="ghost" className='ml-2' disabled={!month} size="sm" onClick={() => setMonth(null)}>
-                      Clear
-                    </Button>
-
-
+                    <input
+                      type="month"
+                      value={selectedMonth}
+                      onChange={handleMonthChange}
+                      className="border rounded px-2 py-1 text-sm"
+                    />
                   </section>
                 </div>
                 <div className='*:p-5 *:text-gray-700 *:dark:text-gray-300 border *:hover:bg-gray-50 *:dark:hover:bg-accent rounded-lg  overflow-y-auto overflow-x-hidden max-h-60'>

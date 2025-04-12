@@ -59,10 +59,10 @@
         <tbody>
             @foreach ($customers as $customer)
                 <tr style="font-size: 14px;">
-                    <td>{{ $customer['name'] }}</td>
-                    <td>P{{ number_format($customer['balance'], 2) }}</td>
+                    <td>{{ $customer->name }}</td>
+                    <td>P{{ number_format($customer->latestTransaction->updated_balance, 2) }}</td>
                     <td style="font-size: 12px;">
-                        {{ $customer['updated_at'] ? \Carbon\Carbon::parse($customer['updated_at'])->format('M j, Y') : 'N/A' }}
+                        {{ $customer['updated_at'] ? \Carbon\Carbon::parse($customer->latestTransaction->created_at)->format('M j, Y') : 'N/A' }}
                     </td>
                 </tr>
             @endforeach

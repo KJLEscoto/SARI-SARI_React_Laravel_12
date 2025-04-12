@@ -38,7 +38,7 @@ class DownloadablesController extends Controller
 
     public function downloadCustomerBalancePdf()
     {
-        $customers = Customer::orderBy('name', 'asc')->get();
+        $customers = Customer::with('latestTransaction')->orderBy('name', 'asc')->get();
         $currentDate = \Carbon\Carbon::now()->format('M d, Y');
         $pdf_date = \Carbon\Carbon::now()->format('Y-M-j');
 
@@ -57,7 +57,8 @@ class DownloadablesController extends Controller
         // $customers = Customer::with(['transactions', 'sales'])->orderBy('name', 'asc')->get();
         $customers = Customer::with([
             'transactions',
-            'sales.order_items.product'
+            'sales.order_items.product',
+            'latestTransaction'
         ])->orderBy('name', 'asc')->get();
 
         $currentDate = \Carbon\Carbon::now()->format('M d, Y');

@@ -61,7 +61,6 @@
 
         .total-amount {
             margin-left: 32px;
-            font-weight: bold;
             font-size: 14px;
         }
 
@@ -87,8 +86,10 @@
             <div class="customer-section">
                 <div class="customer-header" style="margin-bottom: 10px;">
                     <h4 class="customer-name" style="font-size: large;">{{ $customer->name }}</h4>
-                    <h4>Outstanding Balance: P{{ number_format($customer->balance, 2) }}</h4>
-                    <h4>Last Update: {{ \Carbon\Carbon::parse($customer->updated_at)->format('M j, Y') }}</h4>
+                    <h4>Outstanding Balance: P{{ number_format($customer->latestTransaction->updated_balance, 2) }}</h4>
+                    <h4>Last Update:
+                        {{ \Carbon\Carbon::parse($customer->latestTransaction->created_at)->format('M j, Y') }}
+                    </h4>
                 </div>
 
                 @php
@@ -133,25 +134,26 @@
 
                         {{-- If it's an adjustment --}}
                         @if ($transaction->type === 'adjust' || $transaction->type === 'borrow')
-                            <div style="margin-left: 32px; position: relative; width: 100%; margin-top: 15px;">
+                            <div
+                                style="margin-left: 32px; position: relative; width: 100%; margin-top: 15px; margin-bottom: 5px; color:#9e0000;">
                                 Old Balance
                                 <p style="position: absolute; right: 80px; margin: 0;">
                                     P{{ number_format($transaction->old_balance, 2) }}
                                 </p>
                             </div>
-                            <div
-                                style="margin-left: 32px; position: relative; width: 100%; padding-top: 5px; padding-bottom: 10px;">
+                            <strong style="margin-left: 32px; position: relative; width: 100%; color: #4a8dd2;">
                                 Amount Adjusted
                                 <p style="position: absolute; right: 80px; margin: 0;">
+                                    <span style="font-size: 12px; font-style: italic;">New Balance - </span>
                                     P{{ number_format($transaction->amount, 2) }}
                                 </p>
-                            </div>
-                            <div style="margin-left: 32px; position: relative; width: 100%; color:#547086;">
+                            </strong>
+                            {{-- <div style="margin-left: 32px; position: relative; width: 100%; color:#547086;">
                                 <strong>Updated Balance</strong>
                                 <p style="position: absolute; right: 80px; margin: 0;">
                                     <strong>P{{ number_format($transaction->updated_balance, 2) }}</strong>
                                 </p>
-                            </div>
+                            </div> --}}
                         @else
                             {{-- If it's a sale --}}
                             @if ($sale && $sale->order_items->count())
@@ -169,14 +171,22 @@
                                 @endforeach
 
                                 <div class="total-amount"
-                                    style="margin-top: 10px; position: relative; width: 100%; color:#636363;">
+                                    style="margin-top: 10px; position: relative; width: 100%; color:#6b6f6b;">
                                     Subtotal
                                     <p style="position: absolute; right: 80px; margin: 0;">
+                                        <span style="font-size: 17px;">+</span>
                                         P{{ number_format($transaction->amount, 2) }}
                                     </p>
                                 </div>
                                 <div
-                                    style="margin-left: 32px; position: relative; width: 100%; margin-top: 5px; color:#547086;">
+                                    style="margin-left: 32px; position: relative; width: 100%; margin-top: 5px; color:#9e0000;">
+                                    Old Balance
+                                    <p style="position: absolute; right: 80px; margin: 0;">
+                                        P{{ number_format($transaction->old_balance, 2) }}
+                                    </p>
+                                </div>
+                                <div
+                                    style="margin-left: 32px; position: relative; width: 100%; margin-top: 5px; color: #4a8dd2;">
                                     <strong>Updated Balance</strong>
                                     <p style="position: absolute; right: 80px; margin: 0;">
                                         <strong>P{{ number_format($transaction->updated_balance, 2) }}</strong>
@@ -195,7 +205,7 @@
                 {{-- Grand Total --}}
                 @if ($grand_total != 0)
                     <div class="grand-total"
-                        style="position: relative; width: 100%; margin-top: 15px;  color: #26445a;">
+                        style="position: relative; width: 100%; margin-top: 15px;  color: #015191;">
                         Outstanding Balance
                         <p style="position: absolute; right: 65px; margin: 0; text-decoration: underline;">
                             P{{ number_format($grand_total, 2) }}

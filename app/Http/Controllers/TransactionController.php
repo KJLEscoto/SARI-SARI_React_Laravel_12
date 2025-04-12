@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OrderItem;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class TransactionController extends Controller
 {
@@ -12,7 +14,18 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        //
+        $transactions = Transaction::with([
+            'customer',
+        ])->latest()->get();
+
+        $related_sales = OrderItem::with([
+            'product',
+            'sale.customer'
+        ])->latest()
+            ->get();
+
+        // dd($transactions);
+        return Inertia::render('admin/transactions/index', compact('related_sales', 'transactions'));
     }
 
     /**

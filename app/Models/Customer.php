@@ -23,4 +23,10 @@ class Customer extends Model
     {
         return $this->hasMany(Sale::class);
     }
+
+    public function latestTransaction()
+    {
+        return $this->hasOne(Transaction::class)->latest(); // Get the latest transaction for each customer
+    }
+
 }

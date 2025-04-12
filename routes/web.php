@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\DownloadablesController;
 use App\Http\Controllers\POSController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -26,6 +27,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('admin/customers/{id}', [CustomerController::class, 'showOrderHistory'])->name('order-history');
 
     Route::resource('admin/sales', SaleController::class);
+    Route::resource('admin/transactions', TransactionController::class);
 
     Route::resource('admin/downloadables', DownloadablesController::class);
     Route::get('/download-products-pdf', [DownloadablesController::class, 'downloadProductsPdf'])->name('product-list');

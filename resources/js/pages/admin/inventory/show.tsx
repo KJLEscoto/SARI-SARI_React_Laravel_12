@@ -172,13 +172,23 @@ export default function Show({ product, profit, product_sold, sum_product_sold =
                         related_sales.map(item => (
                           <li key={item.id}>
                             <div className="flex w-full h-auto justify-between items-start gap-2" >
-                              <section className='flex flex-col items-start justify-between h-24'>
+                              <section className='flex flex-col items-start justify-between h-23'>
                                 <div>
                                   <p className='font-semibold text-lg'>{`₱${Number(item.sub_total
                                   ).toLocaleString("en-PH")}`}</p>
                                   <p className='text-sm truncate'>{`₱${Number(item.bought_selling_price).toLocaleString("en-PH")}`} x {item.quantity} {item.quantity <= 1 ? 'pc' : 'pcs'}</p>
                                 </div>
-                                <p className='text-sm font-medium'>{item.sale.payment_method} | {item.sale.status}</p>
+                                <h1 className="text-sm">
+                                  {item.sale.payment_method}
+                                  <span className='mx-1'>
+                                    •
+                                  </span>
+                                  <span className={item.sale.status === 'pending' ? 'text-blue-500' : 'text-green-500'}>
+                                    {
+                                      item.sale.status
+                                    }
+                                  </span>
+                                </h1>
                               </section>
 
                               <section className="font-medium text-xs text-end space-y-2">
