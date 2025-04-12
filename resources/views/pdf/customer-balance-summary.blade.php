@@ -19,7 +19,7 @@
         }
 
         .container {
-            padding: 16px;
+            padding: 5px;
             border: 1px solid #ccc;
         }
 
@@ -37,7 +37,7 @@
 
         .customer-header h4 {
             margin: 0;
-            font-size: 14px;
+            font-size: 16px;
             color: #555;
         }
 
@@ -50,25 +50,25 @@
         .transaction {
             margin-left: 16px;
             margin-bottom: 8px;
-            font-size: 14px;
+            font-size: 16px;
         }
 
         .order-item {
             margin-left: 32px;
-            font-size: 14px;
+            font-size: 16px;
             margin-bottom: 6px;
         }
 
         .total-amount {
             margin-left: 32px;
-            font-size: 14px;
+            font-size: 16px;
         }
 
         .grand-total {
             margin-top: 12px;
             margin-left: 16px;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 20px;
         }
 
         strong {
@@ -85,7 +85,7 @@
         @foreach ($customers as $customer)
             <div class="customer-section">
                 <div class="customer-header" style="margin-bottom: 10px;">
-                    <h4 class="customer-name" style="font-size: large;">{{ $customer->name }}</h4>
+                    <h4 class="customer-name" style="font-size: 20px;">{{ $customer->name }}</h4>
                     <h4>Outstanding Balance: P{{ number_format($customer->latestTransaction->updated_balance, 2) }}</h4>
                     <h4>Last Update:
                         {{ \Carbon\Carbon::parse($customer->latestTransaction->created_at)->format('M j, Y') }}
@@ -127,6 +127,9 @@
                     <div class="transaction">
                         <div style="position: relative; width: 100%; margin-bottom: -10px; margin-top: 5px;">
                             <strong>• {{ $transaction->message }}</strong>
+                            <span style="padding-left: 5px; padding-right: 5px; color: #d4c9c9;">
+                                ...........................................................................
+                            </span>
                             <p style="position: absolute; right: 50px; margin: 0; font-style: italic;">
                                 {{ \Carbon\Carbon::parse($transaction->created_at)->format('M j, Y') }}
                             </p>
@@ -163,7 +166,7 @@
                                         <div style="position: relative; width: 100%;">
                                             <p>P{{ number_format($item->bought_selling_price, 2) }} x
                                                 {{ $item->quantity }} pcs</p>
-                                            <p style="position: absolute; right: 50px; top: -20px; margin: 0;">
+                                            <p style="position: absolute; right: 50px; top: -25px; margin: 0;">
                                                 P{{ number_format($item->sub_total, 2) }}
                                             </p>
                                         </div>

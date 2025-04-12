@@ -170,7 +170,7 @@ const MostTransaction = ({ transactions }: { transactions: any[] }) => {
   return (
     <Card>
       <CardHeader>
-        <div className='flex items-center justify-between'>
+        <div className='flex items-center justify-between -mb-8'>
           <div className='space-y-1'>
             <CardTitle>Most Transactions</CardTitle>
             <CardDescription>Based on customer transaction count</CardDescription>
@@ -188,10 +188,10 @@ const MostTransaction = ({ transactions }: { transactions: any[] }) => {
       <CardContent className="p-4">
         {topCustomers.length === 0 ? (
           <div className="text-center text-muted-foreground text-sm py-5">
-            0 Transactions
+            0 Transactions this month
           </div>
         ) : (
-          <ChartContainer config={chartConfig} className="w-full h-auto">
+          <ChartContainer config={chartConfig} className="w-full h-[350px]">
             <BarChart
               data={topCustomers}
               layout="vertical"
@@ -255,7 +255,7 @@ export default function Index({ transactions }: { transactions: any[] }) {
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Sales" />
       <div className="flex h-full flex-1 flex-col gap-5 p-4">
-        <MostTransaction transactions={transactions} getInitials={getInitials} />
+        <MostTransaction transactions={transactions} />
 
         <div className="flex lg:flex-row flex-col gap-5 w-full">
           <TransactionList title="Transaction History" icon={History} status="pending" transactions={transactions} getInitials={getInitials} />
